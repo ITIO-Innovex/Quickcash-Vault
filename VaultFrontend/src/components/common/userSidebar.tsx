@@ -44,6 +44,7 @@ const Sidebar = ({ isOpen, toggleSidebar }: SidebarProps) => {
     { name: 'Cards', icon: 'credit_card', path: '/cards' },
     { name: 'Transaction', icon: 'sync_alt', path: '/transactions' },
     { name: 'Statement', icon: 'receipt_long', path: '/statements' },
+    { name: 'BlockChains', icon: 'currency_bitcoin', path: '/blockchain' },
     {
       name: 'Crypto',
       icon: 'currency_bitcoin',
