@@ -191,6 +191,42 @@ module.exports = {
       });
     }
   },
+  getInvoices : async (req, res) => {
+
+    const userId = req.user._id;
+
+    try {
+      const getData = await fetchVaultDetails(userId);
+      const vaultToken = getData?.vaultUser?.access_token;
+    if (!vaultToken) {
+      return res.status(401).json({
+        status: 401,
+        message: "Vault access token not found.",
+        data: null,
+      });
+    }
+
+      const response = await axios.get(`${VAULT_BASE_URL}/acquiring/invoice`, {
+        headers: {
+          Authorization: `Bearer ${vaultToken}`,
+          ...VAULT_HEADERS(),
+        },
+      });
+
+      return res.status(200).json({
+        status: 200,
+        message: 'Invoices fetched successfully.',
+        data: response.data,
+      });
+    } catch (error) {
+      console.error('Error fetching invoices:', error?.response?.data || error.message);
+      return res.status(500).json({
+        status: 500,
+        message: 'Failed to fetch invoices.',
+        error: error?.response?.data || error.message,
+      });
+    }
+  },
   fetchInvoice: async (req, res) => {
   const userId = req.user._id;
 
@@ -217,10 +253,10 @@ module.exports = {
     }
 
     const invoiceId = userSubscription.lastPaymentInvoiceId;
-    // console.log("📄 Invoice ID to fetch:", invoiceId);
+    console.log("📄 Invoice ID to fetch:", invoiceId);
 
     const response = await axios.get(
-      `https://platform-api.sandbox.testessential.net/acquiring/invoice/${invoiceId}`,
+      `${VAULT_BASE_URL}/acquiring/invoice/${invoiceId}`,
       {
         headers: {
           Authorization: `Bearer ${vaultToken}`,
@@ -243,7 +279,7 @@ module.exports = {
       data: error?.response?.data || null,
     });
   }
-},
+  },
   payInvoice: async (req, res) => {
   const userId = req.user._id || req.user.id;
   const { paymentId, invoiceId, type, accountId, currency, anyCurrency } = req.body;
@@ -306,45 +342,9 @@ module.exports = {
       data: error?.response?.data || null,
     });
   }
-},
-  getInvoices : async (req, res) => {
-
-    const userId = req.user._id;
-
-    try {
-      const getData = await fetchVaultDetails(userId);
-      const vaultToken = getData?.vaultUser?.access_token;
-    if (!vaultToken) {
-      return res.status(401).json({
-        status: 401,
-        message: "Vault access token not found.",
-        data: null,
-      });
-    }
-
-      const response = await axios.get(`${VAULT_BASE_URL}/acquiring/invoice`, {
-        headers: {
-          Authorization: `Bearer ${vaultToken}`,
-          ...VAULT_HEADERS(),
-        },
-      });
-
-      return res.status(200).json({
-        status: 200,
-        message: 'Invoices fetched successfully.',
-        data: response.data,
-      });
-    } catch (error) {
-      console.error('Error fetching invoices:', error?.response?.data || error.message);
-      return res.status(500).json({
-        status: 500,
-        message: 'Failed to fetch invoices.',
-        error: error?.response?.data || error.message,
-      });
-    }
   },
   confirmPayment: async (req, res) => {
-    const userId = req.user.id;
+    const userId = req.user._id || req.user.id;
     const { paymentId, invoiceId, type, accountId, currency, anyCurrency } = req.body;
   
     if (!invoiceId || !type || !accountId ||!anyCurrency) {
@@ -357,16 +357,16 @@ module.exports = {
   
     try {
       const getData = await fetchVaultDetails(userId);
-      const vaultToken = getData?.vaultUser?.access_token;
-  
-      if (!vaultToken) {
-        return res.status(401).json({
-          status: 401,
-          message: "Vault access token not found",
-          data: null,
-        });
-      }
-  
+    const vaultToken = getData?.vaultUser?.access_token;
+
+    if (!vaultToken) {
+      return res.status(401).json({
+        status: 401,
+        message: "Vault access token not found",
+        data: null,
+      });
+    }
+
       // Prepare request body dynamically
       const requestBody = {
         invoiceId,
@@ -378,12 +378,12 @@ module.exports = {
       };
   
       const response = await axios.post(
-        "https://platform-api.sandbox.testessential.net/acquiring/invoice/payment/pay",
+        `${VAULT_BASE_URL}/acquiring/invoice/payment/pay`,
         requestBody,
         {
           headers: {
             Authorization: `Bearer ${vaultToken}`,
-            "Content-Type": "application/json",
+            ...VAULT_HEADERS(),
           },
         }
       );
@@ -394,6 +394,70 @@ module.exports = {
         data: response.data,
       });
   
+    } catch (error) {
+      console.error("Vault API Error:", error?.response?.data || error.message);
+      return res.status(error?.response?.status || 500).json({
+        status: error?.response?.status || 500,
+        message:
+          error?.response?.data?.message || "Vault API error or server issue.",
+        data: error?.response?.data || null,
+      });
+    }
+  },
+  updatePayment: async (req, res) => {
+    const userId = req.user._id || req.user.id;
+    const { paymentId, invoiceId, type, accountId, currency, anyCurrency } = req.body; // Using body params
+
+    // Check for required parameters
+    if (!paymentId || !invoiceId || !type || !accountId || !anyCurrency) {
+      return res.status(400).json({
+        status: 400,
+        message: "paymentId, invoiceId, type, accountId, and anyCurrency are required",
+        data: null,
+      });
+    }
+
+    try {
+      // Fetch Vault details for token
+      const getData = await fetchVaultDetails(userId);
+      const vaultToken = getData?.vaultUser?.access_token;
+
+      if (!vaultToken) {
+        return res.status(401).json({
+          status: 401,
+          message: "Vault access token not found",
+          data: null,
+        });
+      }
+
+      // Prepare the request body dynamically
+      const requestBody = {
+        paymentId,
+        invoiceId,
+        type,
+        accountId,
+        currency,
+        anyCurrency,
+      };
+
+      // Make the PUT request to update payment information
+      const response = await axios.put(
+        `${VAULT_BASE_URL}/acquiring/invoice/payment`,
+        requestBody,
+        {
+          headers: {
+            Authorization: `Bearer ${vaultToken}`,
+            ...VAULT_HEADERS(),
+          },
+        }
+      );
+
+      return res.status(200).json({
+        status: 200,
+        message: "Invoice payment updated successfully",
+        data: response.data,
+      });
+
     } catch (error) {
       console.error("Vault API Error:", error?.response?.data || error.message);
       return res.status(error?.response?.status || 500).json({
@@ -475,6 +539,6 @@ module.exports = {
       data: error.message,
     });
   }
-}
+  }
 };
 
