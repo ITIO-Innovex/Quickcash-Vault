@@ -1,6 +1,8 @@
+import Demo from '@/pages/User/demo';
 import KYC from '@/pages/User/KYC/main';
 import Cards from '@/pages/User/cards/card';
 import { RootLayout } from '@/layouts/index';
+import Wallet from '@/pages/User/Wallet/main';
 import FeeDetail from '@/pages/Admin/Fee/main';
 import Spot from '@/pages/User/SpotTrade/main';
 import Tickets from '@/pages/User/Tickets/main';
@@ -20,6 +22,7 @@ import MinimalLayout from '@/layouts/minimalLayout';
 import Statements from '@/pages/User/Statement/main';
 import UserKyc from '@/pages/Admin/KYC/UserKyc/main';
 import KycMode from '@/pages/Admin/KYC/KycMode/main';
+import Blockchain from '@/pages/User/Blockchain/main';
 import AdminProfile from '@/pages/Admin/Profile/main';
 import UserSignup from '@/pages/User/Auth/UserSignup';
 import SubAdmin from '@/pages/Admin/Subadmin/main.js';
@@ -37,7 +40,6 @@ import ForgotPasswordPage from '@/pages/User/ForgotPassord';
 import BusinessKyc from '@/pages/Admin/KYC/BusinessKyc/main';
 import AdminDashboard from '@/pages/Admin/Dashboard/Dashboard';
 import ProceedPage from '@/pages/User/BuySellSwap/ProceedPage';
-import Demo from '@/pages/User/demo';
 import { createBrowserRouter, Navigate } from 'react-router-dom';
 import TransferReuest from '@/pages/Admin/Crypto/Transfers/main';
 import AllAccounts from '@/pages/User/AccountSection/allAccounts';
@@ -133,10 +135,11 @@ const AdminProtectedRoute = ({ children }: { children: JSX.Element }) => {
     ]
     
     const authRoutes = [
-      { path: '/demo', element: <Demo /> },
       { path: '/kyc', element: <KYC /> },
+      { path: '/demo', element: <Demo /> },
       { path: '/spot', element: <Spot /> },
       { path: '/cards', element: <Cards /> },
+      { path: '/wallets', element: <Wallet /> },
       { path: '/clients', element: <Clients /> },
       { path: '/settings', element: <Settings /> },
       { path: '/help-center', element: <Tickets /> },
@@ -154,6 +157,7 @@ const AdminProtectedRoute = ({ children }: { children: JSX.Element }) => {
       { path: '/all-plans', element: <AllSubscriptions /> },
       // { path: '/account-section', element: <AllAccounts /> },
       { path: '/invoice-quotes', element: <InvoiceQuotes /> },
+      { path: '/blockchain', element: <Blockchain /> },
       { path: '/manual-payment', element: <ManualPayment /> },
       { path: '/beneficiary', element: <SelectBeneficiary /> },
       { path: '/wallet-accounts', element: <WalletAccounts /> },

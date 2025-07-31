@@ -311,6 +311,199 @@ validateWalletAddress: async (req, res) => {
         message: error?.response?.data?.message || "Internal server error while validating the wallet address.",
         data: error?.response?.data || null,
       });
+ }
+},
+getWalletByUserId : async (req, res) => {
+  const userId = req.user._id || req.user.id;  // Assuming the userId is coming from the authenticated user in the request
+
+  try {
+    // Check if the userId is present
+    if (!userId) {
+      return res.status(400).json({
+        status: 400,
+        message: 'User ID is required',
+        data: null,
+      });
     }
+
+    // Fetch wallets based on userId
+    const wallets = await Wallet.find({ userId });
+
+    // If no wallets found for the user
+    if (!wallets || wallets.length === 0) {
+      return res.status(404).json({
+        status: 404,
+        message: 'No wallets found for this user',
+        data: null,
+      });
+    }
+
+    // Successfully found wallets
+    return res.status(200).json({
+      status: 200,
+      message: 'Wallets fetched successfully',
+      data: wallets,
+    });
+
+  } catch (error) {
+    console.error('Error fetching wallet by userId:', error);
+    return res.status(500).json({
+      status: 500,
+      message: 'Internal server error',
+      data: error.message,
+    });
   }
+},
+ getBalanceLog : async (req, res) => {
+  const userId = req.user._id || req.user.id;
+
+   const getData = await fetchVaultDetails(userId);
+      const vaultToken = getData?.vaultUser?.access_token;
+
+      if (!vaultToken) {
+        return res.status(401).json({
+          status: 401,
+          message: "Vault access token not found",
+          data: null,
+        });
+      }
+  // The URL of the Vault API endpoint
+  const url = `${VAULT_BASE_URL}/wallet/v1/balance/log`;
+
+  try {
+    // Make the API call with the vault token
+    const response = await axios.get(
+      url,
+      {
+        headers: {
+          Authorization: `Bearer ${vaultToken}`,
+          ...VAULT_HEADERS(),
+        },
+      },
+    );
+
+    // Log the response from the Vault API
+    console.log("Vault API Response:", response.data);
+
+    // Return the response to the client
+    return res.status(200).json({
+      status: 200,
+      message: "Balance logs fetched successfully",
+      data: response.data,
+    });
+  } catch (error) {
+    // Handle errors
+    console.error("Error fetching balance log:", error);
+    return res.status(500).json({
+      status: 500,
+      message: error?.response?.data?.message || "Error fetching balance logs",
+      data: error?.response?.data || null,
+    });
+  }
+},
+getBalanceLogById : async (req, res) => {
+  const userId = req.user._id || req.user.id;
+
+  const { id } = req.params;
+
+  // Check if the 'id' is provided
+  if (!id) {
+    return res.status(400).json({
+      status: 400,
+      message: "Transaction ID (UUID) is required",
+      data: null,
+    });
+  }
+
+  // Fetch the user's vault details to get the vault token
+  const getData = await fetchVaultDetails(userId);
+  const vaultToken = getData?.vaultUser?.access_token;
+
+  // If vaultToken is not found, return an error
+  if (!vaultToken) {
+    return res.status(401).json({
+      status: 401,
+      message: "Vault access token not found",
+      data: null,
+    });
+  }
+
+  // URL for the specific transaction log, with the UUID
+  const url = `${VAULT_BASE_URL}/wallet/v1/balance/log/${id}`;
+
+  try {
+    // Make the API call with the vault token and the provided 'id'
+    const response = await axios.get(url, {
+      headers: {
+        Authorization: `Bearer ${vaultToken}`,
+        ...VAULT_HEADERS(),
+      },
+    });
+
+    // Log the response from the Vault API
+    console.log("Vault API Response:", response.data);
+
+    // Return the response to the client
+    return res.status(200).json({
+      status: 200,
+      message: "Balance log fetched successfully",
+      data: response.data,
+    });
+  } catch (error) {
+    // Handle errors
+    console.error("Error fetching balance log by ID:", error);
+    return res.status(500).json({
+      status: 500,
+      message: error?.response?.data?.message || "Error fetching balance log by ID",
+      data: error?.response?.data || null,
+    });
+  }
+},
+getBalance : async (req, res) => {
+  const userId = req.user._id || req.user.id;
+
+  // Fetch the user's vault details
+  const getData = await fetchVaultDetails(userId);
+  const vaultToken = getData?.vaultUser?.access_token;
+
+  // Check if vaultToken exists
+  if (!vaultToken) {
+    return res.status(401).json({
+      status: 401,
+      message: "Vault access token not found",
+      data: null,
+    });
+  }
+
+  // URL for fetching balance
+  const url = `${VAULT_BASE_URL}/wallet/v1/balance`;
+
+  try {
+    // Make the GET request to fetch the balance
+    const response = await axios.get(url, {
+      headers: {
+        Authorization: `Bearer ${vaultToken}`,
+        ...VAULT_HEADERS(),
+      },
+    });
+
+    // Log the response from the Vault API
+    console.log("Vault API Response:", response.data);
+
+    // Return the response to the client
+    return res.status(200).json({
+      status: 200,
+      message: "Balance fetched successfully",
+      data: response.data,
+    });
+  } catch (error) {
+    // Handle errors
+    console.error("Error fetching balance:", error);
+    return res.status(500).json({
+      status: 500,
+      message: error?.response?.data?.message || "Error fetching balance",
+      data: error?.response?.data || null,
+    });
+  }
+},
 };

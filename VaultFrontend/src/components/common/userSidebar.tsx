@@ -44,7 +44,12 @@ const Sidebar = ({ isOpen, toggleSidebar }: SidebarProps) => {
     { name: 'Cards', icon: 'credit_card', path: '/cards' },
     { name: 'Transaction', icon: 'sync_alt', path: '/transactions' },
     { name: 'Statement', icon: 'receipt_long', path: '/statements' },
-    { name: 'BlockChains', icon: 'currency_bitcoin', path: '/blockchain' },
+    { name: 'BlockChain', icon: 'currency_bitcoin',
+       hasDropdown: true,
+      subItems: [
+        { name: 'Available Blockchains', path: '/blockchain' },
+        { name: 'Wallet', path: '/wallets' },
+      ]  },
     {
       name: 'Crypto',
       icon: 'currency_bitcoin',
@@ -66,10 +71,11 @@ const Sidebar = ({ isOpen, toggleSidebar }: SidebarProps) => {
       ]
     },
      {
-    name: 'Wallet',
-    icon: 'account_balance_wallet',
+    name: 'Account',
+    icon: 'account_balance',
     path: '/wallet-accounts',
   },
+  
     { name: 'User Profile', icon: 'person', path: '/user-profile' },
     { name: 'Business', icon: 'apartment', path: '/register-business' },
     { name: 'Tickets', icon: 'support_agent', path: '/help-center' },
