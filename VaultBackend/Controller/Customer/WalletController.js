@@ -178,7 +178,7 @@ getWalletAddress: async (req, res) => {
     });
   }
 },
- topUpWallet: async (req, res) => {
+topUpWallet: async (req, res) => {
     const userId = req.user._id || req.user.id;
     const { walletAddress, blockchain } = req.body; // wallet address and blockchain info from request body
 
@@ -354,7 +354,7 @@ getWalletByUserId : async (req, res) => {
     });
   }
 },
- getBalanceLog : async (req, res) => {
+getBalanceLog : async (req, res) => {
   const userId = req.user._id || req.user.id;
 
    const getData = await fetchVaultDetails(userId);

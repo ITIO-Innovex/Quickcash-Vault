@@ -38,6 +38,7 @@ import Notification from '@/pages/Admin/Notification/main';
 import CryptoDashboard from '@/pages/User/Crypto/Dashboard';
 import ForgotPasswordPage from '@/pages/User/ForgotPassord';
 import BusinessKyc from '@/pages/Admin/KYC/BusinessKyc/main';
+import WalletAccounts from '@/pages/User/WalletAccount/main';
 import AdminDashboard from '@/pages/Admin/Dashboard/Dashboard';
 import ProceedPage from '@/pages/User/BuySellSwap/ProceedPage';
 import { createBrowserRouter, Navigate } from 'react-router-dom';
@@ -46,7 +47,6 @@ import AllAccounts from '@/pages/User/AccountSection/allAccounts';
 import BusinessRegister from '@/pages/User/BusinessRegister/main';
 import Settings from '@/pages/User/InvoiceDashboard/Settings/main';
 import CardDetail from '@/pages/User/cards/card-details/cardDetail';
-import WalletAccounts from '@/pages/User/WalletAccount/AllAccounts';
 import AllSubscriptions from '@/pages/User/Subscriptions/Plans/main'; 
 import WalletRequest from '@/pages/Admin/Crypto/WalletRequests/main';
 import SignYourSelf from '@/pages/User/DigitalSignature/SignYourSelf';
@@ -73,8 +73,17 @@ import SelectBeneficiary from '@/pages/User/dashboardInsideForms/sendMoney/selec
   import path from 'path';
 // --- Auth Route Wrapper ---
 const PrivateRoute = ({ children }: { children: JSX.Element }) => {
-  const { isAuthenticated, loading, logout } = useAuth();
-  
+  const { isAuthenticated, loading, kycStatus, logout } = useAuth();
+
+      if (loading) return null; // wait for auth state to load before redirecting
+
+  const currentPath = window.location.pathname;
+  const allowedRoutes = [ '/dashboard'];
+  // Only redirect to /dashboard if KYC is not completed and the current path is not /dashboard
+  if (kycStatus !== 'completed' && !allowedRoutes.includes(currentPath)) {
+    return <Navigate to="/dashboard" />;
+  }
+
   if (localStorage.getItem('source')) {
     const ALLOWED_URLS = [
       '/digital-signature/placeholder-sign',
@@ -93,11 +102,9 @@ const PrivateRoute = ({ children }: { children: JSX.Element }) => {
   }
   console.log('isAuthenticated', isAuthenticated);
   console.log('loading', loading);
-
-  if (loading) return null; // wait for auth state to load before redirecting
-
   return isAuthenticated ? children : <Navigate to="/" />;
 };
+
 // if admin authenticated, redirect to admin dashboard
 const AdminPrivateRoute = ({ children }: { children: JSX.Element }) => {
   const { isAuthenticated, loading } = useAuth();

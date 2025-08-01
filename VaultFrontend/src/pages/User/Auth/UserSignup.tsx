@@ -13,6 +13,7 @@ import {
   MenuItem,
   useTheme,
 } from '@mui/material';
+import CommonTooltip from '@/components/common/toolTip';
 
 const UserSignup = () => {
   const theme = useTheme();
@@ -121,9 +122,13 @@ const UserSignup = () => {
             Register your account
           </Typography>
 
+            <Typography variant="body2" sx={{ color: theme.palette.text.gray, mb: 3 }}>
+                Please ensure that if you use uppercase letters in your email, they must match the exact case during login.
+              </Typography>
           {step === 1 ? (
             <form className="signup-form" onSubmit={handleStep1Submit}>
               <CustomInput name="email" label="Email Address" type="email" fullWidth value={formData.email} onChange={handleChange} InputLabelProps={{ shrink: true }} autoComplete="new-email" required />
+
               <CustomPassword name="password" label="Password" type="password" fullWidth value={formData.password} onChange={handleChange} autoComplete="new-password" required/>
               {apiError && (
                 <Typography variant="body2" color="error" sx={{ mb: 1 }}>
@@ -136,8 +141,9 @@ const UserSignup = () => {
             </form>
           ) : (
             <form className="signup-form" onSubmit={handleFinalSubmit}>
+             
               <CustomInput name="email" label="Email Address" type="email" fullWidth value={formData.email} InputProps={{ readOnly: true }} InputLabelProps={{ shrink: true }} />
-          
+
               <CustomPassword name="password" label="Password" type="password" fullWidth value={formData.password} InputProps={{ readOnly: true }} />
 
               <CustomInput name="emailConfirmCode" label="Email Confirmation Code" type="text" fullWidth value={formData.emailConfirmCode} onChange={handleChange} required />
