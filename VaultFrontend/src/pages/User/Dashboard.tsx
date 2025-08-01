@@ -31,17 +31,20 @@ const UserDashboard = () => {
           Authorization: `Bearer ${localStorage.getItem('token')}`,
         },
       });
-      // console.log('KYC Status Response:', res.data);
       const reviewStatus = res.data?.status;
       if (reviewStatus === 'completed') {
         setKycStatus('completed');
+      } else if (reviewStatus === 'not_found') {
+        setKycStatus('not_found');
+        setShowKycModal(true);
       } else if (!reviewStatus || reviewStatus === 'pending') {
         setKycStatus('pending');
         setShowKycModal(true);
       }
     } catch (err: any) {
       console.error('KYC fetch error:', err?.response?.data || err.message);
-      setShowKycModal(true); // If doc not found, show modal
+      setKycStatus('error');
+      setShowKycModal(true);
     } finally {
       setLoading(false);
     }
@@ -73,7 +76,9 @@ const UserDashboard = () => {
       {!showKycForm ? (
         <>
       <Typography variant="body1" sx={{ mb: 2 }}>
-        Your KYC is {kycStatus === 'pending' ? 'under review.' : 'not started. Please complete it to continue.'}
+        {kycStatus === 'pending' && 'Your KYC is under review.'}
+        {kycStatus === 'not_found' && 'Your KYC is not started. Please complete it to continue.'}
+        {kycStatus === 'error' && 'Error fetching KYC status. Please try again.'}
       </Typography>
       <Box display="flex" justifyContent="space-between">
         <CustomButton variant="outlined" color="error" onClick={handleLogout}>

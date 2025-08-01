@@ -402,26 +402,22 @@ module.exports = {
     }
   },
   checkKYCStatus: async (req, res) => {
- try {
+  try {
     const userId = req.user._id;
-
     if (!userId) {
-      return res.status(401).json({ message: 'Unauthorized: userId missing' });
+      return res.status(400).json({ message: 'User ID required' });
     }
-
     console.log('🔍 Checking KYC for userId:', userId);
-
     const kycDoc = await SumsubKYC.findOne({ user: userId });
-
     if (!kycDoc) {
-      console.log('❌ No KYC document found');
-      return res.status(404).json({ message: 'No KYC document found for this user' });
+      // Instead of 404, return 200 with status 'not_found'
+      return res.status(200).json({
+        message: 'No KYC document found for this user',
+        status: 'not_found',
+      });
     }
-
     const status = kycDoc?.status || 'unknown';
-
     console.log(`✅ Found KYC document, status: ${status}`);
-
     return res.status(200).json({
       message: 'KYC status fetched successfully',
       status,

@@ -1,6 +1,8 @@
+import Demo from '@/pages/User/demo';
 import KYC from '@/pages/User/KYC/main';
 import Cards from '@/pages/User/cards/card';
 import { RootLayout } from '@/layouts/index';
+import Wallet from '@/pages/User/Wallet/main';
 import FeeDetail from '@/pages/Admin/Fee/main';
 import Spot from '@/pages/User/SpotTrade/main';
 import Tickets from '@/pages/User/Tickets/main';
@@ -20,6 +22,7 @@ import MinimalLayout from '@/layouts/minimalLayout';
 import Statements from '@/pages/User/Statement/main';
 import UserKyc from '@/pages/Admin/KYC/UserKyc/main';
 import KycMode from '@/pages/Admin/KYC/KycMode/main';
+import Blockchain from '@/pages/User/Blockchain/main';
 import AdminProfile from '@/pages/Admin/Profile/main';
 import UserSignup from '@/pages/User/Auth/UserSignup';
 import SubAdmin from '@/pages/Admin/Subadmin/main.js';
@@ -35,16 +38,15 @@ import Notification from '@/pages/Admin/Notification/main';
 import CryptoDashboard from '@/pages/User/Crypto/Dashboard';
 import ForgotPasswordPage from '@/pages/User/ForgotPassord';
 import BusinessKyc from '@/pages/Admin/KYC/BusinessKyc/main';
+import WalletAccounts from '@/pages/User/WalletAccount/main';
 import AdminDashboard from '@/pages/Admin/Dashboard/Dashboard';
 import ProceedPage from '@/pages/User/BuySellSwap/ProceedPage';
-import Demo from '@/pages/User/demo';
 import { createBrowserRouter, Navigate } from 'react-router-dom';
 import TransferReuest from '@/pages/Admin/Crypto/Transfers/main';
 import AllAccounts from '@/pages/User/AccountSection/allAccounts';
 import BusinessRegister from '@/pages/User/BusinessRegister/main';
 import Settings from '@/pages/User/InvoiceDashboard/Settings/main';
 import CardDetail from '@/pages/User/cards/card-details/cardDetail';
-import WalletAccounts from '@/pages/User/WalletAccount/AllAccounts';
 import AllSubscriptions from '@/pages/User/Subscriptions/Plans/main'; 
 import WalletRequest from '@/pages/Admin/Crypto/WalletRequests/main';
 import SignYourSelf from '@/pages/User/DigitalSignature/SignYourSelf';
@@ -71,8 +73,17 @@ import SelectBeneficiary from '@/pages/User/dashboardInsideForms/sendMoney/selec
   import path from 'path';
 // --- Auth Route Wrapper ---
 const PrivateRoute = ({ children }: { children: JSX.Element }) => {
-  const { isAuthenticated, loading, logout } = useAuth();
-  
+  const { isAuthenticated, loading, kycStatus, logout } = useAuth();
+
+      if (loading) return null; // wait for auth state to load before redirecting
+
+  const currentPath = window.location.pathname;
+  const allowedRoutes = [ '/dashboard'];
+  // Only redirect to /dashboard if KYC is not completed and the current path is not /dashboard
+  if (kycStatus !== 'completed' && !allowedRoutes.includes(currentPath)) {
+    return <Navigate to="/dashboard" />;
+  }
+
   if (localStorage.getItem('source')) {
     const ALLOWED_URLS = [
       '/digital-signature/placeholder-sign',
@@ -91,11 +102,9 @@ const PrivateRoute = ({ children }: { children: JSX.Element }) => {
   }
   console.log('isAuthenticated', isAuthenticated);
   console.log('loading', loading);
-
-  if (loading) return null; // wait for auth state to load before redirecting
-
   return isAuthenticated ? children : <Navigate to="/" />;
 };
+
 // if admin authenticated, redirect to admin dashboard
 const AdminPrivateRoute = ({ children }: { children: JSX.Element }) => {
   const { isAuthenticated, loading } = useAuth();
@@ -133,10 +142,11 @@ const AdminProtectedRoute = ({ children }: { children: JSX.Element }) => {
     ]
     
     const authRoutes = [
-      { path: '/demo', element: <Demo /> },
       { path: '/kyc', element: <KYC /> },
+      { path: '/demo', element: <Demo /> },
       { path: '/spot', element: <Spot /> },
       { path: '/cards', element: <Cards /> },
+      { path: '/wallets', element: <Wallet /> },
       { path: '/clients', element: <Clients /> },
       { path: '/settings', element: <Settings /> },
       { path: '/help-center', element: <Tickets /> },
@@ -154,6 +164,7 @@ const AdminProtectedRoute = ({ children }: { children: JSX.Element }) => {
       { path: '/all-plans', element: <AllSubscriptions /> },
       // { path: '/account-section', element: <AllAccounts /> },
       { path: '/invoice-quotes', element: <InvoiceQuotes /> },
+      { path: '/blockchain', element: <Blockchain /> },
       { path: '/manual-payment', element: <ManualPayment /> },
       { path: '/beneficiary', element: <SelectBeneficiary /> },
       { path: '/wallet-accounts', element: <WalletAccounts /> },

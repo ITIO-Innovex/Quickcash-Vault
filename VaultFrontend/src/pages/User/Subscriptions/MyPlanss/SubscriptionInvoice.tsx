@@ -15,7 +15,7 @@ const detailItem = (label: string, value: React.ReactNode) => (
 );
 
   return (
-    <CustomModal open={open} onClose={handleClose} title="Subscription Invoice" sx={{ backgroundColor: 'background.default' }}>
+    <CustomModal open={open} onClose={handleClose}  disableBackdropClick={true} title="Subscription Invoice" sx={{ backgroundColor: 'background.default' }}>
       {invoice && (
         <Box sx={{ borderRadius: 2 }}>
           <Typography variant="h6" mb={2} fontWeight="bold">

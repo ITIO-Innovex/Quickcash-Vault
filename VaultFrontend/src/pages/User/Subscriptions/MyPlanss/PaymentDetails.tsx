@@ -1,5 +1,6 @@
 import axios from 'axios';
 import{ useEffect, useState } from 'react';
+import { CircularProgress } from '@mui/material';
 import CustomModal from '@/components/CustomModal';
 import { Box, Typography, Grid, Chip, Button, Stepper, Step, StepLabel } from '@mui/material';
 import CustomButton from '@/components/CustomButton';
@@ -13,9 +14,19 @@ const PaymentDetails = ({ open, onClose, invoice }: any) => {
   const [anyCurrency, setAnyCurrency] = useState<boolean>(false);
   const [type, setType] = useState<'PLATFORM' | 'EXTERNAL' | 'CHECKOUT'>('PLATFORM');
   const [invoiceId, setInvoiceId] = useState<string | null>(localStorage.getItem("recurrentInvoiceId"));
-
   const [walletAccounts, setWalletAccounts] = useState<any[]>([]);
   const [selectedAccount, setSelectedAccount] = useState<string | null>(null);
+  // Confirm Payment Step State
+  const [confirmForm, setConfirmForm] = useState({
+    paymentId: '',
+    invoiceId: '',
+    type: '',
+    accountId: '',
+    currency: '',
+    anyCurrency: false,
+  });
+  const [confirmLoading, setConfirmLoading] = useState(false);
+  const [updateLoading, setUpdateLoading] = useState(false);
 
   useEffect(() => {
     if (open) {
@@ -69,11 +80,12 @@ const PaymentDetails = ({ open, onClose, invoice }: any) => {
 };
 
   return (
-    <CustomModal open={open} onClose={onClose} title="Invoice Payment" sx={{ backgroundColor: 'background.default' }}>
+    <CustomModal open={open} onClose={onClose} disableBackdropClick={true} title="Invoice Payment" sx={{ backgroundColor: 'background.default' }}>
       <Stepper activeStep={activeStep} sx={{ mb: 3 }}>
         <Step><StepLabel>Select Account</StepLabel></Step>
         <Step><StepLabel>Create Payment</StepLabel></Step>
         <Step><StepLabel>Confirm Payment</StepLabel></Step>
+        <Step><StepLabel>Update Payment</StepLabel></Step>
       </Stepper>
 
       {/* Step 1 - Select Account */}
@@ -164,8 +176,9 @@ const PaymentDetails = ({ open, onClose, invoice }: any) => {
 
             <Box mt={4} textAlign="center">
               <CustomButton
-                onClick={handleCreatePayment}
-                disabled={!selectedAccount || !invoiceId}
+                // onClick={handleCreatePayment}
+                // disabled={!selectedAccount || !invoiceId}
+                onClick={() => setActiveStep(2)}
               >
                 Create Payment
               </CustomButton>
@@ -174,14 +187,199 @@ const PaymentDetails = ({ open, onClose, invoice }: any) => {
         </Box>
       )}
 
-      {/* Step 3 - Confirm */}
+      {/* Step 3 - Confirm Payment */}
       {activeStep === 2 && (
+        <Box py={3} maxWidth={500} mx="auto">
+          <Typography variant="h6" mb={2} fontWeight="bold" textAlign="center">
+            Confirm Payment
+          </Typography>
+          <Box display="flex" flexDirection="column" gap={2}>
+            <CustomInput
+              label="Payment ID"
+              name="paymentId"
+              value={confirmForm.paymentId}
+              onChange={e => setConfirmForm(f => ({ ...f, paymentId: e.target.value }))}
+            />
+            <CustomInput
+              label="Invoice ID"
+              name="invoiceId"
+              disabled
+              value={confirmForm.invoiceId || invoiceId || ''}
+              onChange={e => setConfirmForm(f => ({ ...f, invoiceId: e.target.value }))}
+              required
+            />
+            <CustomSelect
+              label="Payment Type"
+              value={confirmForm.type || type}
+              onChange={e => setConfirmForm(f => ({ ...f, type: e.target.value as string }))}
+              options={[
+                { label: 'Platform', value: 'PLATFORM' },
+                { label: 'External', value: 'EXTERNAL' },
+                { label: 'Checkout', value: 'CHECKOUT' },
+              ]}
+              required
+            />
+            <CustomInput
+              label="Account ID"
+              name="accountId"
+              disabled
+              value={confirmForm.accountId || selectedAccount || ''}
+              onChange={e => setConfirmForm(f => ({ ...f, accountId: e.target.value }))}
+              required
+            />
+            <CustomInput
+              label="Currency"
+              name="currency"
+              value={confirmForm.currency || invoice?.currency || ''}
+              onChange={e => setConfirmForm(f => ({ ...f, currency: e.target.value }))}
+            />
+            <CustomSelect
+              label="Any Currency"
+              value={String(confirmForm.anyCurrency)}
+              onChange={e => setConfirmForm(f => ({ ...f, anyCurrency: e.target.value === 'true' }))}
+              options={[
+                { label: 'True', value: 'true' },
+                { label: 'False', value: 'false' },
+              ]}
+              required
+            />
+            <Box mt={4} textAlign="center">
+              <CustomButton
+                onClick={async () => {
+                  setConfirmLoading(true);
+                  try {
+                    const token = localStorage.getItem('token');
+                    if (!token) throw new Error('Token not found');
+                    const payload: any = {
+                      invoiceId: confirmForm.invoiceId || invoiceId,
+                      type: confirmForm.type || type,
+                      accountId: confirmForm.accountId || selectedAccount,
+                      anyCurrency: confirmForm.anyCurrency,
+                    };
+                    if (confirmForm.paymentId) payload.paymentId = confirmForm.paymentId;
+                    if (confirmForm.currency) payload.currency = confirmForm.currency;
+                    await axios.post(`${API_URL}/subscription/invoice/payment/confirm`, payload, {
+                      headers: { Authorization: `Bearer ${token}` },
+                    });
+                    setActiveStep(3);
+                  } catch (err: any) {
+                    alert(err?.response?.data?.message || err.message || 'Failed to confirm payment');
+                  } finally {
+                    setConfirmLoading(false);
+                  }
+                }}
+                disabled={
+                  !confirmForm.invoiceId || !confirmForm.accountId || !confirmForm.type
+                }
+              >
+                {confirmLoading ? <CircularProgress size={24} color="inherit" /> : 'Confirm Payment'}
+              </CustomButton>
+            </Box>
+          </Box>
+        </Box>
+      )}
+
+      {/* Step 4 - Update Payment */}
+      {activeStep === 3 && (
+        <Box py={3} maxWidth={500} mx="auto">
+          <Typography variant="h6" mb={2} fontWeight="bold" textAlign="center">
+            Update Payment
+          </Typography>
+          <Box display="flex" flexDirection="column" gap={2}>
+            <CustomInput
+              label="Payment ID"
+              name="paymentId"
+              value={confirmForm.paymentId}
+              onChange={e => setConfirmForm(f => ({ ...f, paymentId: e.target.value }))}
+              required
+            />
+            <CustomInput
+              label="Invoice ID"
+              name="invoiceId"
+              disabled
+              value={confirmForm.invoiceId || invoiceId || ''}
+              onChange={e => setConfirmForm(f => ({ ...f, invoiceId: e.target.value }))}
+              required
+            />
+            <CustomSelect
+              label="Payment Type"
+              value={confirmForm.type || type}
+              onChange={e => setConfirmForm(f => ({ ...f, type: e.target.value as string }))}
+              options={[
+                { label: 'Platform', value: 'PLATFORM' },
+                { label: 'External', value: 'EXTERNAL' },
+                { label: 'Checkout', value: 'CHECKOUT' },
+              ]}
+              required
+            />
+            <CustomInput
+              label="Account ID"
+              name="accountId"
+              disabled
+              value={confirmForm.accountId || selectedAccount || ''}
+              onChange={e => setConfirmForm(f => ({ ...f, accountId: e.target.value }))}
+              required
+            />
+            <CustomInput
+              label="Currency"
+              name="currency"
+              value={confirmForm.currency || invoice?.currency || ''}
+              onChange={e => setConfirmForm(f => ({ ...f, currency: e.target.value }))}
+            />
+            <CustomSelect
+              label="Any Currency"
+              value={String(confirmForm.anyCurrency)}
+              onChange={e => setConfirmForm(f => ({ ...f, anyCurrency: e.target.value === 'true' }))}
+              options={[
+                { label: 'True', value: 'true' },
+                { label: 'False', value: 'false' },
+              ]}
+              required
+            />
+            <Box mt={4} textAlign="center">
+              <CustomButton
+                onClick={async () => {
+                  setUpdateLoading(true);
+                  try {
+                    const token = localStorage.getItem('token');
+                    if (!token) throw new Error('Token not found');
+                    const payload: any = {
+                      paymentId: confirmForm.paymentId,
+                      invoiceId: confirmForm.invoiceId || invoiceId,
+                      type: confirmForm.type || type,
+                      accountId: confirmForm.accountId || selectedAccount,
+                      anyCurrency: confirmForm.anyCurrency,
+                    };
+                    if (confirmForm.currency) payload.currency = confirmForm.currency;
+                    await axios.put(`${API_URL}/subscription/invoice/payment/update`, payload, {
+                      headers: { Authorization: `Bearer ${token}` },
+                    });
+                    setActiveStep(4);
+                  } catch (err: any) {
+                    alert(err?.response?.data?.message || err.message || 'Failed to update payment');
+                  } finally {
+                    setUpdateLoading(false);
+                  }
+                }}
+                disabled={
+                  !confirmForm.paymentId || !confirmForm.invoiceId || !confirmForm.accountId || !confirmForm.type || confirmForm.anyCurrency === undefined || updateLoading
+                }
+              >
+                {updateLoading ? <CircularProgress size={24} color="inherit" /> : 'Update Payment'}
+              </CustomButton>
+            </Box>
+          </Box>
+        </Box>
+      )}
+
+      {/* Step 5 - Done */}
+      {activeStep === 4 && (
         <Box textAlign="center" py={6}>
           <Typography variant="h6" mb={2} fontWeight="bold">
-            Payment Confirmed!
+            Payment Updated!
           </Typography>
           <Typography>
-            Your payment has been initiated for invoice <b>{invoice?.id}</b>.
+            Your payment has been updated for invoice <b>{invoice?.id}</b>.
           </Typography>
           <Box mt={4}>
             <CustomButton onClick={onClose}>Close</CustomButton>

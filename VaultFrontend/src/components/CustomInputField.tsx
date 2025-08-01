@@ -33,7 +33,12 @@ const CustomInput: React.FC<CustomInputProps> = ({
       fullWidth
       variant="outlined"
       {...props}
-      label={label}
+      label={
+        <span>
+          {label}
+          {required && <span style={{ color: 'red', marginLeft: 2 }}>*</span>}
+        </span>
+      }
       value={value}
       onChange={onChange}
       onBlur={handleBlur}

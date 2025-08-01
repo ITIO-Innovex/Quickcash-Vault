@@ -2,6 +2,7 @@ import axios from "axios";
 import snsWebSdk from "@sumsub/websdk";
 import { useTheme } from "@mui/material";
 import React, { useEffect, useRef, useState } from "react";
+import { useNavigate } from "react-router-dom";
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
 
 const SumsubKYC = () => {
@@ -10,6 +11,7 @@ const SumsubKYC = () => {
   const [kycApiResponse, setKycApiResponse] = useState<any>(null);
   const [accessToken, setAccessToken] = useState(null);
   const [countdown, setCountdown] = useState<number | null>(null);
+  const navigate = useNavigate();
 
   const fetchAccessToken = async () => {
     try {
@@ -53,17 +55,15 @@ const SumsubKYC = () => {
   // Handle countdown and redirect
   useEffect(() => {
     if (countdown === null) return;
-  
     if (countdown === 0) {
-      window.location.href = "/all-plans";
+      navigate("/all-plans");
       return;
     }
     const timer = setTimeout(() => {
       setCountdown(prev => (prev !== null ? prev - 1 : null));
     }, 1000);
-  
     return () => clearTimeout(timer);
-  }, [countdown]);
+  }, [countdown, navigate]);
   
 
   useEffect(() => {
@@ -124,7 +124,7 @@ return (
 
     {countdown !== null && (
       <div style={{ marginTop: "20px", textAlign: "center", fontSize: "18px", color: "green" }}>
-        KYC Verified. Redirecting to dashboard in {countdown} second{countdown !== 1 ? "s" : ""}...
+        KYC Verified. Redirecting to Subscription Plans in {countdown} second{countdown !== 1 ? "s" : ""}...
       </div>
     )}
   </div>

@@ -9,11 +9,9 @@ const Main = () => {
   return (
     <Box className="dashboard-container"sx={{ backgroundColor: theme.palette.background.default }} >
       <PageHeader title="BlockChains" />
-
-      <FirstSection />
-      
+      <FirstSection /> 
     </Box>
   );
 };
-
+  
 export default Main;
