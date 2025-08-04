@@ -1,7 +1,7 @@
 import { Box, useTheme } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import PageHeader from '@/components/common/pageHeader';
-import AllAccounts from './AllAccounts';
+import FirstSection from './FirstSection';
 
 const Main = () => {
   
@@ -10,8 +10,8 @@ const Main = () => {
 
   return (
     <Box className="dashboard-container" sx={{ backgroundColor: theme.palette.background.default }} >
-       <PageHeader title="Wallet Accounts" />
-       <AllAccounts/>
+       <PageHeader title="Wallets" />
+       <FirstSection/>
     </Box>
   );
 };

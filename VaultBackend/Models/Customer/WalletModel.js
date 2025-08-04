@@ -6,6 +6,7 @@ const walletSchema = new mongoose.Schema({
   accountId: { type: String, required: true },
   addressIndex: { type: Number, required: true },
   blockchain: { type: String, required: true },
+  currency: { type: String, required: false },
   address: { type: String, required: true },
   type: { type: String, required: true },
   valid: { type: Boolean, default: false }, 

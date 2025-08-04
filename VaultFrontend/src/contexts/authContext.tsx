@@ -1,83 +1,7 @@
-// import { jwtDecode } from 'jwt-decode';
-// import { JwtPayload } from '@/types/jwt';
-// import React, { createContext, useContext, useEffect, useState } from 'react';
-
-// interface AuthContextType {
-//   token: string | null;
-//   user: JwtPayload['data'] | null;
-//   isAuthenticated: boolean;
-//   login: (token: string) => void;
-//   logout: () => void;
-// }
-
-// const AuthContext = createContext<AuthContextType | undefined>(undefined);
-
-// export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
-//   const [token, setToken] = useState<string | null>(null);
-//   const [user, setUser] = useState<JwtPayload['data'] | null>(null);
-//   const [isAuthenticated, setIsAuthenticated] = useState(false);
-
-//   // Validate token and set user info on initial load
-//   useEffect(() => {
-//     const storedToken = localStorage.getItem('token');
-//     if (storedToken && isTokenValid(storedToken)) {
-//       const decoded = jwtDecode<JwtPayload>(storedToken);
-//       setToken(storedToken);
-//       setUser(decoded.data);
-//       setIsAuthenticated(true);
-//     } else {
-//       localStorage.removeItem('token');
-//       setToken(null);
-//       setUser(null);
-//       setIsAuthenticated(false);
-//     }
-//   }, []);
-
-// const login = (newToken: string) => {
-//   if (isTokenValid(newToken)) {
-//     const decoded = jwtDecode<JwtPayload>(newToken);
-//     localStorage.setItem('token', newToken);
-//     setToken(newToken);
-//     setUser(decoded.data);
-//     setIsAuthenticated(true);
-//   } else {
-//     logout();
-//   }
-// };
-// const logout = () => {
-//     localStorage.removeItem('token');
-//     setToken(null);
-//     setUser(null);
-//     setIsAuthenticated(false);
-// };
-
-//   return (
-//     <AuthContext.Provider value={{ token, user, isAuthenticated, login, logout }}>
-//       {children}
-//     </AuthContext.Provider>
-//   );
-// };
-
-// export const useAuth = (): AuthContextType => {
-//   const context = useContext(AuthContext);
-//   if (!context) {
-//     throw new Error('useAuth must be used within an AuthProvider');
-//   }
-//   return context;
-// };
-
-// // Helper to check if token is valid (not expired)
-// function isTokenValid(token: string): boolean {
-//   try {
-//     const decoded = jwtDecode<JwtPayload>(token);
-//     return decoded.exp * 1000 > Date.now();
-//   } catch {
-//     return false;
-//   }
-// }
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { jwtDecode } from 'jwt-decode';
 import { JwtPayload } from '@/types/jwt';
+import api from '@/helpers/apiHelper';
 
 interface AuthContextType {
   token: string | null;
@@ -86,6 +10,7 @@ interface AuthContextType {
   loading: boolean;
   login: (token: string) => void;
   logout: () => void;
+  kycStatus: string | null; // Added kycStatus property
   // NEW for admin
   adminToken: string | null;
   admin: JwtPayload['data'] | null;
@@ -98,14 +23,31 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [token, setToken] = useState<string | null>(null);
-  const [user, setUser] = useState<JwtPayload['data'] | null>(null);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [kycStatus, setKycStatus] = useState<string | null>(null); 
+  const [user, setUser] = useState<JwtPayload['data'] | null>(null);
   const [loading, setLoading] = useState(true); // NEW
 
   // NEW admin states
   const [adminToken, setAdminToken] = useState<string | null>(null);
   const [admin, setAdmin] = useState<JwtPayload['data'] | null>(null);
   const [isAdminAuthenticated, setIsAdminAuthenticated] = useState(false);
+  const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+    // Function to fetch KYC status independently
+  const fetchKycStatus = async () => {
+    try {
+      const res = await api.get(`${API_URL}/customer/kyc-status`, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem('token')}`,
+        },
+      });
+      const reviewStatus = res.data?.status;
+      console.log('KYC Status Response from auth context:', res.data);
+      setKycStatus(reviewStatus); // Store KYC status here
+    } catch (err) {
+      console.error('Error fetching KYC status:', err);
+    }
+  };
 
   useEffect(() => {
     const storedToken = localStorage.getItem('token');
@@ -114,12 +56,15 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       setToken(storedToken);
       setUser(decoded.data);
       setIsAuthenticated(true);
+      fetchKycStatus();   // Fetch KYC status on initial load
     } else {
       localStorage.removeItem('token');
       setToken(null);
       setUser(null);
       setIsAuthenticated(false);
+      setKycStatus(null); // Reset KYC status if token is invalid
     }
+    
 
     // Admin token logic
     const storedAdminToken = localStorage.getItem('admin');
@@ -144,6 +89,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       setToken(newToken);
       setUser(decoded.data);
       setIsAuthenticated(true);
+      fetchKycStatus(); // Fetch KYC status upon login
     } else {
       logout();
     }
@@ -154,6 +100,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     setToken(null);
     setUser(null);
     setIsAuthenticated(false);
+    setKycStatus(null);
   };
 
   // NEW admin login/logout
@@ -184,6 +131,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         isAuthenticated,
         loading,
         login,
+        kycStatus,
         logout,
         // NEW admin values
         adminToken,
