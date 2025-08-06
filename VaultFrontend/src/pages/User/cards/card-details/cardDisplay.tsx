@@ -61,8 +61,7 @@ const CardDisplay: React.FC<CardDisplayProps> = ({
 }) => {
 
   const theme = useTheme();
-  const url: string =
-    import.meta.env.VITE_NODE_ENV === "production" ? "api" : "api";
+  const url: string = import.meta.env.VITE_NODE_ENV === "production" ? "api" : "api";
   const navigate = useNavigate();
 
   const [cardsDetails, setCardDetails] = useState<CardDetails[]>([]);

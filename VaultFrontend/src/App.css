@@ -1724,7 +1724,8 @@ margin: 0;
 
 .status-chip.success,
 .status-chip.active,
-.status-chip.init {
+.status-chip.init,
+.status-chip.data_collection {
   background-color: #e0ffe0;
   color: #2e7d32;
   border: 1px solid #2e7d32;
@@ -1732,14 +1733,17 @@ margin: 0;
 
 .status-chip.pending,
 .status-chip.inactive,
-.status-chip.canceled {
+.status-chip.canceled ,
+.status-chip.pending {
   background-color: #fff3e0;
   color: #ef6c00;
   border: 1px solid #ef6c00;
 }
 
 .status-chip.failed,
-.status-chip.cancelled {
+.status-chip.cancelled,
+.status-chip.invoice_failed,
+.status-chip.failed {
   background-color: #ffebee;
   color: #c62828;
   border: 1px solid #c62828;
@@ -7912,3 +7916,6 @@ color: var(--bs-primary);
     padding: 20px;
   }
 }
+
+
+

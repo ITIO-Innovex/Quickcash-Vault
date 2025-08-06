@@ -6,7 +6,8 @@ const fetchVaultDetails = async (userId) => {
     const vaultUser = await VaultUser.findById(userId);
 
     if (!vaultUser) {
-      return null;
+         throw new Error('Vault token is missing or invalid');
+      // return null;
     }
 
     return {

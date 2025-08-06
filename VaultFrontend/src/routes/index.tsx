@@ -3,6 +3,7 @@ import KYC from '@/pages/User/KYC/main';
 import Cards from '@/pages/User/cards/card';
 import { RootLayout } from '@/layouts/index';
 import Wallet from '@/pages/User/Wallet/main';
+import Tokens from '@/pages/User/Tokens/main'; 
 import FeeDetail from '@/pages/Admin/Fee/main';
 import Spot from '@/pages/User/SpotTrade/main';
 import Tickets from '@/pages/User/Tickets/main';
@@ -13,6 +14,7 @@ import Clients from '@/pages/User/Clients/main';
 import Invoice from '@/pages/Admin/Invoice/main';
 import Revenue from '@/pages/Admin/Revenue/main';
 import Contact from '@/pages/LandingPage/Contact';
+import Currency from '@/pages/User/Currency/main'; 
 import UserDashboard from '@/pages/User/Dashboard';
 import UserList from '@/pages/Admin/UserList/main';
 import UserLogin from '@/pages/User/Auth/UserLogin';
@@ -35,6 +37,8 @@ import Dashboard from '@/pages/Admin/Dashboard/Dashboard';
 import CurrencyList from '@/pages/Admin/CurrencyList/main';
 import CoinList from '@/pages/Admin/Crypto/CoinsList/main';
 import Notification from '@/pages/Admin/Notification/main';
+import SummaryTokens from '@/pages/User/SummaryTokens/main'; 
+import ExchangePairs from '@/pages/User/ExchangePairs/main'; 
 import CryptoDashboard from '@/pages/User/Crypto/Dashboard';
 import ForgotPasswordPage from '@/pages/User/ForgotPassord';
 import BusinessKyc from '@/pages/Admin/KYC/BusinessKyc/main';
@@ -52,6 +56,7 @@ import WalletRequest from '@/pages/Admin/Crypto/WalletRequests/main';
 import SignYourSelf from '@/pages/User/DigitalSignature/SignYourSelf';
 import MySubscriptions from '@/pages/User/Subscriptions/MyPlanss/main';
 import InvoiceDashboard from '@/pages/User/InvoiceDashboard/Dashboard';
+import CardRequests from '@/pages/User/cards/card-details/cardRequests';
 import SendMoney from '@/pages/User/dashboardInsideForms/sendMoney/main';
 import TotalTransactions from '@/pages/Admin/Fiat/TotalTransactions/main';
 // import DigitalSignature from '../pages/User/DigitalSignature/index.jsx';
@@ -146,14 +151,17 @@ const AdminProtectedRoute = ({ children }: { children: JSX.Element }) => {
       { path: '/demo', element: <Demo /> },
       { path: '/spot', element: <Spot /> },
       { path: '/cards', element: <Cards /> },
+      { path: '/tokens', element: <Tokens/> },
       { path: '/wallets', element: <Wallet /> },
       { path: '/clients', element: <Clients /> },
+      { path: '/currency', element: <Currency/> },
       { path: '/settings', element: <Settings /> },
       { path: '/help-center', element: <Tickets /> },
       { path: '/send-money', element: <SendMoney /> },
       { path: '/refer-earn', element: <ReferEarn /> },
       { path: '/add-client', element: <AddClient /> },
       { path: '/statements', element: <Statements /> },
+      { path: '/blockchain', element: <Blockchain /> },
       { path: '/dashboard', element: <UserDashboard /> },
       { path: '/card-details', element: <CardDetail /> },
       { path: '/buysellswap', element: <BuySellSwap /> },
@@ -162,9 +170,11 @@ const AdminProtectedRoute = ({ children }: { children: JSX.Element }) => {
       { path: '/admin-dashboard', element: <Dashboard /> },
       { path: '/transactions', element: <Transactions /> },
       { path: '/all-plans', element: <AllSubscriptions /> },
+      { path: '/card-requests', element: <CardRequests /> },
       // { path: '/account-section', element: <AllAccounts /> },
       { path: '/invoice-quotes', element: <InvoiceQuotes /> },
-      { path: '/blockchain', element: <Blockchain /> },
+      { path: '/summary-tokens', element: <SummaryTokens /> },
+      { path: '/exchange-pairs', element: <ExchangePairs /> },
       { path: '/manual-payment', element: <ManualPayment /> },
       { path: '/beneficiary', element: <SelectBeneficiary /> },
       { path: '/wallet-accounts', element: <WalletAccounts /> },
@@ -229,6 +239,7 @@ const router = createBrowserRouter([
     ),
     children: authRoutes,
   },
+  
   {
     element: <AdminProtectedRoute><AdminLayout /></AdminProtectedRoute>,
     children: adminRoutes,

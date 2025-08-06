@@ -407,7 +407,7 @@ module.exports = {
     if (!userId) {
       return res.status(400).json({ message: 'User ID required' });
     }
-    console.log('🔍 Checking KYC for userId:', userId);
+    // console.log('🔍 Checking KYC for userId:', userId);
     const kycDoc = await SumsubKYC.findOne({ user: userId });
     if (!kycDoc) {
       // Instead of 404, return 200 with status 'not_found'

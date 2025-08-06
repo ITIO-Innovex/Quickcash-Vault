@@ -6,6 +6,7 @@ import {
   IconButton,
   SxProps,
   Theme,
+  Divider,
 } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 
@@ -79,6 +80,7 @@ const CustomModal: React.FC<CustomModalProps> = ({
           <Typography id="modal-title" variant="h6" component="h2">
             {title}
           </Typography>
+          <Divider sx={{ marginBottom: 2 }} />
           {!hideCloseIcon && (
             <IconButton
               aria-label="close"

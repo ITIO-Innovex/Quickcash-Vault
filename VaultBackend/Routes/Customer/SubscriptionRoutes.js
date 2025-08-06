@@ -2,7 +2,7 @@ const express = require("express");
 const router = express.Router();
 const {verifyOurToken} = require("../../Middlewares/VerifyToken");
 const {checkVaultToken} = require("../../Middlewares/CheckVaultToken")
-const { getAvailableSubscriptionDetails, startSubscription,getCurrentSubscription,fetchInvoice, payInvoice , getInvoices, confirmPayment,updatePayment 
+const { getAvailableSubscriptionDetails, startSubscription,getCurrentSubscription,fetchInvoice, payInvoice , getInvoices, confirmPayment,updateInvoicePayment 
 } = require("../../Controller/Customer/SubscriptionController");
 
 // Get all available subscription plans from Vault
@@ -26,5 +26,5 @@ router.post('/invoice/payment', verifyOurToken, checkVaultToken, payInvoice);
 // Confirm Payment
 router.post('/invoice/payment/confirm',verifyOurToken, checkVaultToken, confirmPayment);
 //  Update Payment
-router.put('/invoice/payment/complete', verifyOurToken, checkVaultToken, updatePayment);
+router.put('/payment/update', verifyOurToken, checkVaultToken, updateInvoicePayment);
 module.exports = router;

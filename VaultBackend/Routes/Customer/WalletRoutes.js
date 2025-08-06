@@ -19,5 +19,5 @@ router.get('/balance-log', verifyOurToken, checkVaultToken ,getBalanceLog);
 // Route to get balance log by transaction id
 router.get('/balance-log/:id', verifyOurToken, checkVaultToken ,getBalanceLogById);
 // Route to get total wallet balance
-router.get('/balance', verifyOurToken, checkVaultToken ,getBalance);
+router.get('/balance-all', verifyOurToken, checkVaultToken ,getBalance);
 module.exports = router;

@@ -1,26 +1,10 @@
 import React, { useState } from 'react';
-import {
-  Container,
-  Typography,
-  Box,
-  Grid,
-  Card,
-  Button,
-  List,
-  ListItem,
-  ListItemIcon,
-  ListItemText,
-  Paper,
-  Avatar,
-  useTheme,
-} from '@mui/material';
-import {
-  CreditCard,
-  AccountBalance,
-  CheckCircle,
-} from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 import PageHeader from '@/components/common/pageHeader';
+import CardOffers from '@/pages/User/cards/card-details/cardOffers';
+import { CreditCard, AccountBalance, CheckCircle,} from '@mui/icons-material';
+import { Typography, Box, Grid, Card, Button, List, ListItem, ListItemIcon, ListItemText, Avatar, useTheme,
+} from '@mui/material';
 
 const Cards: React.FC = () => {
   const theme = useTheme();
@@ -64,12 +48,10 @@ const navigate = useNavigate();
   const currentBenefits = selectedCardType === 'virtual' ? virtualCardBenefits : physicalCardBenefits;
 
   return (
-    // <Container className="container-cards">
-     <Box 
-      className="dashboard-container " maxWidth="xl" 
-      sx={{ backgroundColor: theme.palette.background.default }}
-    >
+
+     <Box  className="dashboard-container " maxWidth="xl" sx={{ backgroundColor: theme.palette.background.default }}>
       <PageHeader title="Cards" />
+      <CardOffers />
 
       <Grid container spacing={4}>
         <Grid item xs={12} md={4}>
