@@ -39,7 +39,7 @@ const Sidebar = ({ isOpen, toggleSidebar }: SidebarProps) => {
     { name: 'Dashboard', icon: <DashboardIcon />,path: '/dashboard' },
     { name: 'Cards', icon: <CreditCardIcon />, hasDropdown: true,
       subItems: [
-        { name: 'Create Card', path: '/cards' },
+        { name: 'Your Cards', path: '/cards' },
         { name: 'Card Requests', path: '/card-requests' },
       ]   },
     { name: 'Transaction', icon: <SyncAltIcon />, path: '/transactions' },

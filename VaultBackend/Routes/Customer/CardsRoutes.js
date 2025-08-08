@@ -26,7 +26,7 @@ router.get('/:cardId/transactions', verifyOurToken, checkVaultToken, getCardTran
 // Route for getting all cards
 router.get('/all', verifyOurToken, checkVaultToken, getCardList);
 // Route for changing card status
-router.post('/change-status', verifyOurToken, checkVaultToken, changeCardStatus);
+router.post('/:cardId/change-status', verifyOurToken, checkVaultToken, changeCardStatus);
 // Route for activating a card
 router.post('/:cardId/activate', verifyOurToken, checkVaultToken, activateCard);
 // Route for getting card details

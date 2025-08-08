@@ -15,6 +15,7 @@ import AttachMoneyIcon from '@mui/icons-material/AttachMoney';
 const url = import.meta.env.VITE_NODE_ENV === "production" ? "api" : "api";
 import { Box,CircularProgress, IconButton, Typography, useTheme } from "@mui/material";
 import SubscriptionInvoice from "../../Subscriptions/MyPlanss/SubscriptionInvoice";
+import CardOffers from "./availableCardOffers";
 
 const CardRequests = () => {
   const theme = useTheme();
@@ -344,6 +345,7 @@ const handleDeliveryChange = (e) => setDelivery(prev => ({
   return (
     <Box className="dashboard-container" maxWidth="xl" sx={{ backgroundColor: theme.palette.background.default }}>
       <PageHeader title="Card Requests" />
+      <CardOffers />
       {loading ? (
         <Box display="flex" justifyContent="center" mt={6}>
           <CircularProgress />

@@ -1,15 +1,15 @@
-import React, { useEffect, useState } from 'react';
-import { Box, Container, useMediaQuery } from '@mui/material';
-import { useTheme } from '@mui/material/styles';
-import UserInformation from './UserInformation';
-import TabNavigation from './TabNavigation';
+import Mfa from './MultiFactorAuth';
+import UserScope from './UserScopes';
 import AccountsList from './AccountsList';
-import BeneficiaryAccountsList from './BeneficiaryAccountsList';
 import LoginHistory from './LoginHistory';
 import SecurityForm from './SecurityForm';
+import TabNavigation from './TabNavigation';
 import UpdateDetails from './UpdateDetails';
-import Documents from './Documents';
-import UserScope from './UserScopes';
+import { useEffect, useState } from 'react';
+import { useTheme } from '@mui/material/styles';
+import UserInformation from './UserInformation';
+import { Box, Container, useMediaQuery } from '@mui/material';
+import BeneficiaryAccountsList from './BeneficiaryAccountsList';
 
 interface VaultUser {
   email: string;
@@ -57,7 +57,7 @@ const UserProfile = () => {
     'Session History',
     'Security',
     'Update Details',
-    'Documents'
+    'MFA'
   ];
 
   const subTabs = ['User Scopes', 'Accounts List', 'Beneficiary Accounts List'];
@@ -101,8 +101,8 @@ const UserProfile = () => {
         return <SecurityForm />;
       case 'Update Details':
         return <UpdateDetails />;
-      case 'Documents':
-        return <Documents />;
+      case 'MFA':
+        return < Mfa/>;
       default:
         return (
           <Box sx={{ p: 3, textAlign: 'center', color: theme.palette.text.secondary }}>

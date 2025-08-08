@@ -426,17 +426,25 @@ changeCardStatus : async (req, res) => {
     const getData = await fetchVaultDetails(userId);
     const vaultToken = getData?.vaultUser?.access_token;
 
-    const { requiredStatus, cardId } = req.query;
-
-    if (!cardId && !requiredStatus) {
+    const { cardId } = req.params;
+    const { requiredStatus } = req.query;
+    // Input validation
+    if (!cardId) {
       return res.status(400).json({
         status: 400,
-        message: "cardId or requiredStatus are required ."
+        message: "cardId is required in path params."
+      });
+    }
+
+    if (!requiredStatus) {
+      return res.status(400).json({
+        status: 400,
+        message: "RequiredStatus are required ."
       });
     }
 
     const response = await axios.post(
-      `${VAULT_BASE_URL}/card-holder/cardholder/card/${cardId}/change-status}`,
+      `${VAULT_BASE_URL}/card-holder/cardholder/card/${cardId}/change-status`,
       {},
       {
         headers: {

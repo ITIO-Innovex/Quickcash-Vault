@@ -8,6 +8,7 @@ import CustomInput from '@/components/CustomInputField';
 import CustomSelect from '@/components/CustomDropdown';
 import { useAppToast } from '@/utils/Toast';
 import { Currency } from 'lucide-react';
+import api from '@/helpers/apiHelper';
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
 
@@ -15,6 +16,7 @@ const PaymentDetails = ({ open, onClose, invoice }: any) => {
   const toast = useAppToast();
   const [activeStep, setActiveStep] = useState(0);
   const [anyCurrency, setAnyCurrency] = useState<boolean>(false);
+  const [currency , setCurrency] = useState('ETH');
   const [type, setType] = useState<'PLATFORM' | 'EXTERNAL' | 'CHECKOUT'>('PLATFORM');
   const [invoiceId, setInvoiceId] = useState<string | null>(localStorage.getItem("InvoiceId"));
   const [paymentId, setPaymentId] = useState<string | null>(localStorage.getItem("PaymentId"));
@@ -59,6 +61,7 @@ const PaymentDetails = ({ open, onClose, invoice }: any) => {
         accountId: selectedAccount,
         invoiceId: invoiceId,    
         type: type,
+        currency: currency,
         anyCurrency: anyCurrency,
       };
 
@@ -214,34 +217,17 @@ const PaymentDetails = ({ open, onClose, invoice }: any) => {
             Confirm Payment
           </Typography>
           <Box display="flex" flexDirection="column" gap={2}>
-            <CustomInput
-              label="Payment ID"
-              name="paymentId"
-              value={paymentId}
-              disabled
-            />
-            <CustomInput
-              label="Invoice ID"
-              name="invoiceId"
-              disabled
-              value={invoiceId}
-            />
-            <CustomSelect
-              label="Payment Type"
-              value={type}
-              onChange={(e) => setType(e.target.value as 'PLATFORM' | 'EXTERNAL' | 'CHECKOUT')}
+            <CustomInput label="Payment ID" name="paymentId" value={paymentId} disabled />
+            <CustomInput label="Invoice ID" name="invoiceId" disabled value={invoiceId} />
+            <CustomSelect label="Payment Type" value={type} onChange={(e) => setType(e.target.value as 'PLATFORM' | 'EXTERNAL' | 'CHECKOUT')}
               options={[
                 { label: 'Platform', value: 'PLATFORM' },
                 { label: 'External', value: 'EXTERNAL' },
                 { label: 'Checkout', value: 'CHECKOUT' },
               ]}
             />
-            <CustomInput
-              label="Account ID"
-              name="accountId"
-              disabled
-              value={selectedAccount}
-            />
+            <CustomInput label="Account ID" name="accountId"  disabled value={selectedAccount} />
+             <CustomInput label="Currency" value={currency} disabled />
             <CustomSelect
               label="Any Currency"
               value={String(anyCurrency)}
@@ -264,6 +250,7 @@ const PaymentDetails = ({ open, onClose, invoice }: any) => {
                       invoiceId,
                       type,
                       accountId: selectedAccount,
+                      currency,
                       anyCurrency,
                     };
                     const response = await axios.post(`${API_URL}/subscription/invoice/payment/confirm`, payload, {
@@ -298,38 +285,18 @@ const PaymentDetails = ({ open, onClose, invoice }: any) => {
             Update Payment
           </Typography>
           <Box display="flex" flexDirection="column" gap={2}>
-            <CustomInput
-              label="Payment ID"
-              name="paymentId"
-              value={paymentId}
-              disabled
-            />
-            <CustomInput
-              label="Invoice ID"
-              name="invoiceId"
-              disabled
-              value={invoiceId}
-            />
-            <CustomSelect
-              label="Payment Type"
-              value={type}
-              onChange={(e) => setType(e.target.value as 'PLATFORM' | 'EXTERNAL' | 'CHECKOUT')}
+            <CustomInput label="Payment ID" name="paymentId" value={paymentId} disabled />
+            <CustomInput label="Invoice ID" name="invoiceId" disabled value={invoiceId} />
+            <CustomSelect label="Payment Type" value={type} onChange={(e) => setType(e.target.value as 'PLATFORM' | 'EXTERNAL' | 'CHECKOUT')}
               options={[
                 { label: 'Platform', value: 'PLATFORM' },
                 { label: 'External', value: 'EXTERNAL' },
                 { label: 'Checkout', value: 'CHECKOUT' },
               ]}
             />
-            <CustomInput
-              label="Account ID"
-              name="accountId"
-              disabled
-              value={selectedAccount}
-            />
-            <CustomSelect
-              label="Any Currency"
-              value={String(anyCurrency)}
-              onChange={(e) => setAnyCurrency(e.target.value === 'true')}
+            <CustomInput label="Account ID" name="accountId" disabled value={selectedAccount} />
+             <CustomInput label="Currency" value={currency} disabled />
+            <CustomSelect label="Any Currency" value={String(anyCurrency)} onChange={(e) => setAnyCurrency(e.target.value === 'true')}
               options={[
                 { label: 'True', value: 'true' },
                 { label: 'False', value: 'false' },
@@ -348,9 +315,10 @@ const PaymentDetails = ({ open, onClose, invoice }: any) => {
                       invoiceId,
                       type,
                       accountId: selectedAccount,
+                      currency,
                       anyCurrency,
                     };
-                    const response = await axios.post(`${API_URL}/subscription/payment/update`, payload, {
+                    const response = await api.put(`${API_URL}/subscription/payment/update`, payload, {
                       headers: { Authorization: `Bearer ${token}` },
                     });
                     // Success: go to next step

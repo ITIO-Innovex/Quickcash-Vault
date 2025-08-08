@@ -13,7 +13,7 @@ const generateOurToken = (userData) => {
   return jwt.sign(
     { _id, user_vault_id, scopes, email },
     process.env.JWT_SECRET,
-    { expiresIn: "2h" }
+    { expiresIn: "1d" }
   );
 };
 

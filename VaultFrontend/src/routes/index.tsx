@@ -49,8 +49,7 @@ import { createBrowserRouter, Navigate } from 'react-router-dom';
 import TransferReuest from '@/pages/Admin/Crypto/Transfers/main';
 import AllAccounts from '@/pages/User/AccountSection/allAccounts';
 import BusinessRegister from '@/pages/User/BusinessRegister/main';
-import Settings from '@/pages/User/InvoiceDashboard/Settings/main';
-import CardDetail from '@/pages/User/cards/card-details/cardDetail';
+import Settings from '@/pages/User/InvoiceDashboard/Settings/main'; 
 import AllSubscriptions from '@/pages/User/Subscriptions/Plans/main'; 
 import WalletRequest from '@/pages/Admin/Crypto/WalletRequests/main';
 import SignYourSelf from '@/pages/User/DigitalSignature/SignYourSelf';
@@ -163,7 +162,6 @@ const AdminProtectedRoute = ({ children }: { children: JSX.Element }) => {
       { path: '/statements', element: <Statements /> },
       { path: '/blockchain', element: <Blockchain /> },
       { path: '/dashboard', element: <UserDashboard /> },
-      { path: '/card-details', element: <CardDetail /> },
       { path: '/buysellswap', element: <BuySellSwap /> },
       { path: '/my-plans', element: <MySubscriptions /> },
       { path: '/user-profile', element: <UserProfile /> },
