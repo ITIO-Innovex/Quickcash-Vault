@@ -50,7 +50,7 @@ const PageHeader: React.FC<HeaderProps> = ({
             onClick={onButtonClick}
             disabled={!onButtonClick}
           >
-            {buttonText !== 'Your Invoice' && buttonText !== 'Loading...' &&  <AddIcon className="icon-size" />}
+           {buttonText !== 'Your Invoice' && buttonText !== 'Total Balance' && buttonText !== 'Calculate Rates' && buttonText !== 'Loading...' && <AddIcon className="icon-size" />}
             <span className="button-text">{buttonText}</span>
           </CustomButton>
 

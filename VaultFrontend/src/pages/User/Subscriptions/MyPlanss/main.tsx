@@ -22,14 +22,16 @@ const Main = () => {
       }
     });
     const invoiceData = response.data.data;
+    console.log("📄 Invoice data:", invoiceData);
     setInvoice(invoiceData); 
     setOpen(true);
 
     // ✅ Store recurrentInvoiceId in localStorage
-    if (invoiceData?.recurrentInvoiceId) {
-      localStorage.setItem("recurrentInvoiceId", invoiceData.recurrentInvoiceId);
-      // console.log("💾 recurrentInvoiceId stored:", invoiceData.recurrentInvoiceId);
+   const invoiceId = invoiceData.id;
+   if (invoiceId) {
+      localStorage.setItem("InvoiceId", invoiceId);
     }
+    console.log("Invoice ID stored in localStorage:", invoiceId);
 
   } catch (err) {
     alert('Failed to fetch invoice');

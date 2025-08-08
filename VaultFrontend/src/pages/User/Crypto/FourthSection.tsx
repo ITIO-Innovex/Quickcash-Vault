@@ -1,73 +1,166 @@
+import axios from 'axios';
+import { useEffect, useState } from 'react';
+import { Box, Divider, Typography } from '@mui/material';
 import GenericTable from '@/components/common/genericTable';
-import { Box, Typography } from '@mui/material';
+import CustomModal from '@/components/CustomModal'; 
+import CustomButton from '@/components/CustomButton';
 
-const transactionData = [
-  {
-    date: "2025-04-14 05:35:52 PM",
-    coin: "USDT_BSC",
-    quantity: "5.0007451",
-    type: "buy",
-    amount: "$5",
-    status: "Pending",
-  },
-  {
-    date: "2025-04-09 11:06:39 AM",
-    coin: "USDT_BSC",
-    quantity: "5.0040984",
-    type: "buy",
-    amount: "$5",
-    status: "Failed",
-  },
-  {
-    date: "2025-04-09 05:54:32 PM",
-    coin: "ADA",
-    quantity: "8.9605735",
-    type: "buy",
-    amount: "$5",
-    status: "Success",
-  },
-  {
-    date: "2025-04-08 04:42:01 PM",
-    coin: "ADA",
-    quantity: "16.9376694",
-    type: "buy",
-    amount: "$10",
-    status: "Success",
-  },
-  {
-    date: "2025-04-08 01:35:14 PM",
-    coin: "ADA",
-    quantity: "8.5587128",
-    type: "buy",
-    amount: "$5",
-    status: "Success",
-  },
-];
-
-const transactionColumns = [
-  { field: "date", headerName: "Date" },
-  { field: "coin", headerName: "Coin" },
-  { field: "quantity", headerName: "Quantity" },
-  { field: "type", headerName: "Type" },
-  { field: "amount", headerName: "Amount" },
-  {
-    field: "status",
-    headerName: "Status",
-    render: (row: any) => (
-      <span className={`status-chip ${row.status.toLowerCase()}`}>
-        {row.status}
-      </span>
-    ),
-  },
-];
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
 
 const FourthSection = () => {
+  const [transactionData, setTransactionData] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [modalOpen, setModalOpen] = useState(false);
+  const [selectedTransaction, setSelectedTransaction] = useState(null);
+
+  // Function to fetch details of a specific transaction by ID
+  const fetchTransactionDetails = async (transactionId: string) => {
+    try {
+      const response = await axios.get(`${API_URL}/wallet/balance-log/${transactionId}`, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem('token')}`,
+        },
+      });
+
+      console.log(`Details for transaction ${transactionId}:`, response.data);
+
+      // Open the modal with the fetched data
+      setSelectedTransaction(response.data.data);
+      setModalOpen(true);
+    } catch (error) {
+      console.error('Error fetching transaction details:', error);
+    }
+  };
+
+  // Columns for the table
+  const transactionColumns = [
+    { field: 'timestamp', headerName: 'Date' },
+    { 
+      field: 'id', 
+      headerName: 'ID', 
+      render: (row: any) => (
+        <span 
+          style={{ cursor: 'pointer', color: 'blue' }} 
+          onClick={() => fetchTransactionDetails(row.id)} // Now `fetchTransactionDetails` is in scope
+        >
+          {row.id}
+        </span>
+      ),
+    },
+    { field: 'blockchain', headerName: 'Blockchain' },
+    { field: 'operationType', headerName: 'Operation Type' },
+    { field: 'amount', headerName: 'Amount' },
+    { field: 'currency', headerName: 'Currency' },
+    { 
+      field: 'status', 
+      headerName: 'Status', 
+      render: (row: any) => (
+        <span className={`status-chip ${row.status.toLowerCase()}`}>
+          {row.status}
+        </span>
+      ),
+    },
+  ];
+
+  useEffect(() => {
+    const fetchTransactionData = async () => {
+      try {
+        const token = localStorage.getItem('token');
+        const response = await axios.get(`${API_URL}/wallet/balance-log`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        console.log('API Response:', response.data);
+
+        // Mapping the response data to match the table format
+        if (response.data && response.data.data) {
+          const mappedData = response.data.data.map((item: any) => ({
+            timestamp: new Date(item.timestamp).toLocaleString(),
+            operationType: item.operationType,
+            id: item.id,
+            amount: item.cryptoDepositModel.amount,
+            blockchain: item.cryptoDepositModel.blockchain,
+            currency: item.cryptoDepositModel.currency.toUpperCase(),
+            status: item.status,
+          }));
+
+          setTransactionData(mappedData);
+        } else {
+          console.error('No data found in response');
+        }
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchTransactionData();
+  }, []);
+
+  const handleModalClose = () => {
+    setModalOpen(false);
+    setSelectedTransaction(null);
+  };
+
+  if (loading) {
+    return <Typography>Loading...</Typography>;
+  }
+
   return (
     <Box className="fourth-section-wrapper">
       <Box className="fourth-box">
         <Typography className="box-title">Crypto Transactions</Typography>
         <GenericTable columns={transactionColumns} data={transactionData} />
       </Box>
+      {/* Custom Modal to display the transaction details */}
+      <CustomModal 
+        title="Transaction Details" 
+        open={modalOpen} 
+        onClose={handleModalClose} 
+        disableBackdropClick={true}
+      >
+        {selectedTransaction && (
+          <Box padding={3} >
+
+            <Typography variant="body1" mb={1}>
+              <strong>Transaction ID:</strong> {selectedTransaction.id}
+            </Typography>
+            <Typography variant="body1" mb={1}>
+              <strong>Operation Type:</strong> {selectedTransaction.operationType}
+            </Typography>
+            <Typography variant="body1" mb={1}>
+              <strong>Status:</strong> 
+              <span className={`status-chip ${selectedTransaction.status.toLowerCase()}`}>
+                {selectedTransaction.status}
+              </span>
+            </Typography>
+            <Typography variant="body1" mb={1}>
+              <strong>Amount:</strong> {selectedTransaction.cryptoDepositModel.amount} {selectedTransaction.cryptoDepositModel.currency.toUpperCase()}
+            </Typography>
+            <Typography variant="body1" mb={1}>
+              <strong>Blockchain:</strong> {selectedTransaction.cryptoDepositModel.blockchain}
+            </Typography>
+            <Typography variant="body1" mb={1}>
+              <strong>From Address:</strong> {selectedTransaction.cryptoDepositModel.fromAddress}
+            </Typography>
+            <Typography variant="body1" mb={1}>
+              <strong>To Address:</strong> {selectedTransaction.cryptoDepositModel.toAddress}
+            </Typography>
+            <Typography variant="body1" mb={2}>
+              <strong>Transaction Hash:</strong> {selectedTransaction.cryptoDepositModel.txHash}
+            </Typography>
+
+            <Box display="flex" justifyContent="flex-end">
+              <CustomButton variant="contained" color="primary" onClick={handleModalClose}>
+                Close
+              </CustomButton>
+            </Box>
+          </Box>
+        )}
+      </CustomModal>
     </Box>
   );
 };

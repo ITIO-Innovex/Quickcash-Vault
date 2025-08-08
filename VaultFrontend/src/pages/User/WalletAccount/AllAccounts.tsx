@@ -12,7 +12,7 @@ const AllAccounts = () => {
   const [accounts, setAccounts] = useState([]);
   const [error, setError] = useState<string | null>(null);
   const [expanded, setExpanded] = useState<string | null>(null); // account id
-  const [details, setDetails] = useState<any>(null); // details for expanded account
+  const [details, setDetails] = useState<{[id: string]: any}>({});
   const [detailsLoading, setDetailsLoading] = useState(false);
   const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
 
@@ -40,34 +40,42 @@ const AllAccounts = () => {
     fetchAccounts();
   }, []);
 
-  const handleExpandClick = async (accountId: string) => {
-    if (expanded === accountId) {
-      setExpanded(null);
-      setDetails(null);
+ const handleExpandClick = async (accountId: string) => {
+  if (expanded === accountId) {
+    setExpanded(null);
+    setDetails(null);
+    return;
+  }
+
+  setExpanded(accountId);
+  setDetailsLoading(true);
+
+  try {
+    const token = localStorage.getItem('token');
+    if (!token) {
+      toast.error('Token not found');
       return;
     }
-    setExpanded(accountId);
-    setDetailsLoading(true);
-    try {
-       const token = localStorage.getItem('token');
-      if (!token) {
-        toast.error('Token not found');
-        return;
-      }
-      const res = await axios.get(`${API_URL}/wallet/account/${accountId}`, {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem('token')}`,
-        },
-        withCredentials: true,
-      });
-      setDetails(res.data);
-      console.log("Account Details:", res.data);
-    } catch (err) {
-      setDetails(null);
-    } finally {
-      setDetailsLoading(false);
-    }
-  };
+
+    const res = await axios.get(`${API_URL}/wallet/account/${accountId}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      withCredentials: true,
+    });
+
+    setDetails(prev => ({
+      ...prev,
+      [accountId]: res.data.data
+    }));
+
+  } catch (err: any) {
+    setDetails(null);
+    console.error("Failed to fetch account details:", err);
+  } finally {
+    setDetailsLoading(false);
+  }
+};
 
   if (loading) return <Box textAlign="center" mt={4}><CircularProgress /></Box>;
   if (error) return <Typography color="error" sx={{p:4}}>{error}</Typography>;
@@ -88,20 +96,21 @@ const AllAccounts = () => {
                     {expanded === acc.account ? <ExpandLessIcon /> : <ExpandMoreIcon />}
                   </IconButton>
                 </Tooltip>
-                {expanded === acc.account && (
-                  <Box sx={{ mt: 2 }}>
-                    {detailsLoading ? (
-                      <Box sx={{ textAlign: 'center' }}><CircularProgress size={24} /></Box>
-                    ) : details ? (
-                      <>
-                        <Typography variant="body2">Account Type: {details.accountType}</Typography>
-                        <Typography variant="body2">Account Short Name: {details.shortName }</Typography>
-                      </>
-                    ) : (
-                      <Typography variant="body2" color="error">Failed to load details.</Typography>
-                    )}
-                  </Box>
-                )}
+               {expanded === acc.account && (
+                <Box sx={{ mt: 2 }}>
+                  {detailsLoading ? (
+                    <Box sx={{ textAlign: 'center' }}><CircularProgress size={24} /></Box>
+                  ) : details[acc.account] ? (
+                    <>
+                      <Typography variant="body2">Account Type: {details[acc.account].accountType}</Typography>
+                      <Typography variant="body2">Account Short Name: {details[acc.account].shortName || 'N/A'}</Typography>
+                    </>
+                  ) : (
+                    <Typography variant="body2" color="error">Failed to load details.</Typography>
+                  )}
+                </Box>
+              )}
+
               </Box>
             </Grid>
           ))}

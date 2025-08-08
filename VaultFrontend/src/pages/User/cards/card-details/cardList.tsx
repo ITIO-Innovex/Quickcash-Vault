@@ -1,177 +1,99 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import {
-  Card,
   Typography,
   FormControl,
   Select,
   MenuItem,
   Box,
   Chip,
-  IconButton,
-  useTheme
+  useTheme,
 } from '@mui/material';
-import axios from 'axios';
 import EditCardForm from './EditForm';
-import { jwtDecode } from 'jwt-decode';
 import { toast } from 'react-toastify';
-import { Delete, Edit } from '@mui/icons-material';
-import CustomModal from '@/components/CustomModal';
 import DeleteIcon from '@mui/icons-material/Delete';
 import VisibilityIcon from '@mui/icons-material/Visibility';
+import CustomModal from '@/components/CustomModal';
 import GenericTable from '@/components/common/genericTable';
-import api from '@/helpers/apiHelper';
 
-interface JwtPayload {
-  sub: string;
-  role: string;
-  iat: number;
-  exp: number;
-  data: {
-    defaultcurr: string;
-    email: string;
-    id: string;
-    name: string;
-    type: string;
-  };
-}
+// --- Dummy data array ---
+const dummyCards = [
+  {
+    _id: '1',
+    createdAt: '2024-04-01T10:30:00.000Z',
+    name: 'My Visa Card',
+    cardNumber: '1234567890123456',
+    currency: 'USD',
+    cvv: '123',
+    expiry: '12/27',
+    status: true,
+  },
+  {
+    _id: '2',
+    createdAt: '2024-02-11T15:00:00.000Z',
+    name: 'Work MasterCard',
+    cardNumber: '9876543210987654',
+    currency: 'EUR',
+    cvv: '321',
+    expiry: '03/26',
+    status: false,
+  },
+];
+
 const CardList = () => {
   const theme = useTheme();
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const [isModalOpen, setModalOpen] = useState(false);
   const [selectedCard, setSelectedCard] = useState(null);
-  const [cardData, setCardData] = useState([]);
+  // Use local state to update table if needed
+  const [cardData, setCardData] = useState(dummyCards);
 
-  const url = import.meta.env.VITE_NODE_ENV == "production" ? "api" : "api";
-
-  const getDecodedToken = () => {
-    const token = localStorage.getItem("token");
-    if (!token) return null;
-    try {
-      return jwtDecode(token);
-    } catch (e) {
-      toast.error("Invalid token");
-      return null;
-    }
-  };
-
-  const getCardsList = async () => {
-    try {
-      const token = localStorage.getItem("token");
-      if (!token) return toast.error("No token found");
-
-      const decoded = jwtDecode<JwtPayload>(token);
-      const accountId = decoded.data.id;
-
-      const res = await api.get(`/${url}/v1/card/list/${accountId}`, {
-        headers: { Authorization: `Bearer ${token}` }
+  // ---- DUMMY versions of handlers ----
+  const getCardDetails = (id) => {
+    const card = cardData.find(c => c._id === id);
+    if (card) {
+      setSelectedCard({
+        id: card._id,
+        createdDate: card.createdAt,
+        name: card.name,
+        cardNumber: card.cardNumber,
+        currency: card.currency || "USD",
+        cvv: card.cvv,
+        expiryDate: card.expiry,
+        status: card.status ? 'ACTIVE' : 'INACTIVE',
       });
-      console.log("Fetched cards:", res.data.data); // <-- DEBUG
-      if (res.data.status === 201) {
-        setCardData(res.data.data);
-      }
-    } catch (error) {
-      console.log(error);
-      toast.error("Failed to fetch card list");
+      setModalOpen(true);
+    } else {
+      toast.error("Card not found (dummy data)");
     }
   };
 
-  const getCardDetails = async (id) => {
-    try {
-      const res = await api.get(`/${url}/v1/card/${id}`, {
-        headers: { Authorization: `Bearer ${localStorage.getItem("token")}` }
-      });
-      if (res.data.status === 201) {
-        const card = res.data.data;
-        console.log(card, 'card')
-        setSelectedCard({
-          id: card._id,
-          createdDate: card.createdAt,
-          name: card.name,
-          cardNumber: card.cardNumber,
-          currency: card.currency || "USD",
-          cvv: card.cvv,
-          expiryDate: card.expiry,
-          status: card.status ? 'ACTIVE' : 'INACTIVE',
-
-        });
-        setModalOpen(true);
-      } else {
-        toast.error("Card not found");
-      }
-    } catch (error) {
-      console.log("error", error);
-      toast.error("Failed to fetch card details");
-    }
+  const deleteCard = (id) => {
+    if (!window.confirm("Want to delete?")) return;
+    setCardData(prev => prev.filter(card => card._id !== id));
+    toast.success("Card deleted (dummy mode)");
   };
 
-  const deleteCard = async (id) => {
-    if (!confirm("Want to delete?")) return;
-    try {
-      const res = await api.delete(`/${url}/v1/card/delete/${id}`, {
-        headers: { Authorization: `Bearer ${localStorage.getItem("token")}` }
-      });
-      if (res.data.status === 201) {
-        toast.success("Card deleted successfully");
-        getCardsList();
-      } else {
-        toast.error("Failed to delete");
-      }
-    } catch (error) {
-      console.log("error", error);
-      toast.error(error.response?.data?.message || "Delete failed");
-    }
+  // Save handler to update dummy list
+  const handleSave = (updatedCard) => {
+    setCardData(prev =>
+      prev.map(card =>
+        card._id === updatedCard.id
+          ? {
+              ...card,
+              name: updatedCard.name,
+              cardNumber: updatedCard.cardNumber,
+              expiry: updatedCard.expiryDate,
+              cvv: updatedCard.cvv,
+              currency: updatedCard.currency,
+              status: updatedCard.status === 'ACTIVE',
+            }
+          : card
+      )
+    );
+    setModalOpen(false);
+    toast.success("Card updated (dummy mode)");
   };
-
-  const handleSave = async (updatedCard) => {
-    const token = localStorage.getItem("token");
-    if (!token) {
-      toast.error("No token found");
-      return;
-    }
-
-    let decoded: JwtPayload;
-    try {
-      decoded = jwtDecode<JwtPayload>(token);
-    } catch (error) {
-      toast.error("Invalid token");
-      return;
-    }
-
-    try {
-      const res = await api.patch(
-        `/${url}/v1/card/update/${updatedCard.id}`,
-        {
-          name: updatedCard.name,
-          card_id: updatedCard.id,
-          user: decoded.data.id,
-          cardnumber: updatedCard.cardNumber,
-          expiry: updatedCard.expiryDate,
-          cvv: updatedCard.cvv,
-          status: updatedCard.status === 'ACTIVE',
-        },
-        {
-          headers: { Authorization: `Bearer ${token}` }
-        }
-      );
-
-      if (res.data.status === 201) {
-        toast.success(res.data.message);
-        setModalOpen(false);
-        getCardsList();
-      } else {
-        toast.error("Failed to update card");
-      }
-    } catch (error) {
-      console.error("error", error);
-      toast.error(error.response?.data?.message || "Update failed");
-    }
-  };
-
-
-  useEffect(() => {
-    getCardsList();
-  }, []);
 
   const getCurrencyColor = (currency) => {
     const map = {
@@ -179,7 +101,7 @@ const CardList = () => {
       GBP: 'success',
       USD: 'secondary',
       AUD: 'warning',
-      EUR: 'error'
+      EUR: 'error',
     };
     return map[currency] || 'primary';
   };
@@ -195,7 +117,7 @@ const CardList = () => {
     { id: 'cvv', label: 'CVV' },
     { id: 'expiryDate', label: 'Expiry Date' },
     { id: 'status', label: 'Status' },
-    { id: 'action', label: 'Action', align: 'center' as 'center' }
+    { id: 'action', label: 'Action', align: 'center' },
   ];
 
   const transformedColumns = columns.map((col) => {
@@ -203,42 +125,37 @@ const CardList = () => {
       return {
         field: col.id,
         headerName: col.label,
-        render: (row: any) => {
+        render: (row) => {
           const statusText = row.status ? 'Active' : 'Inactive';
           const statusClass = row.status ? 'active' : 'inactive';
-
           return (
-            <span className={`status-chip ${statusClass}`}>
-              {statusText}
-            </span>
+            <span className={`status-chip ${statusClass}`}>{statusText}</span>
           );
-        }
+        },
       };
     }
-
     if (col.id === 'action') {
       return {
         field: col.id,
         headerName: col.label,
         align: 'center',
-        render: (row: any) => (
+        render: (row) => (
           <Box display="flex" gap={1}>
             <VisibilityIcon fontSize="small" sx={{ cursor: 'pointer' }} onClick={() => getCardDetails(row.action)} />
             <DeleteIcon fontSize="small" sx={{ cursor: 'pointer' }} onClick={() => deleteCard(row.action)} />
           </Box>
-        )
+        ),
       };
     }
-
     return {
       field: col.id,
       headerName: col.label,
     };
   });
 
-
+  // Array for the table
   const rows = cardData.map(card => ({
-    id: card._id, // important for keys & actions
+    id: card._id,
     createdDate: new Date(card.createdAt).toLocaleDateString(),
     name: card.name,
     cardNumber: (
@@ -251,45 +168,26 @@ const CardList = () => {
     ),
     cvv: card.cvv,
     expiryDate: card.expiry,
-    // status: (
-    //   <Chip label={card.status ? 'Active' : 'Inactive'} color={card.status ? 'success' : 'default'} />
-    // ),
-    // action: (
-    //   <Box display="flex" gap={1}>
-    //     <IconButton size="small" onClick={() => getCardDetails(card._id)}>
-    //       <Edit fontSize="small" />
-    //     </IconButton>
-    //     <IconButton size="small" onClick={() => deleteCard(card._id)}>
-    //       <Delete fontSize="small" />
-    //     </IconButton>
-    //   </Box>
-    // )
     status: card.status,
-    action: card._id
+    action: card._id,
   }));
-  useEffect(() => {
-    console.log("Updated cardData:", cardData);
-  }, [cardData]);
 
   return (
-    <Box sx={{ padding: 3 }} style={{ backgroundColor: theme.palette.background.default }}>
+    <Box sx={{ padding: 3, backgroundColor: theme.palette.background.default }}>
       <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
         <Typography variant="h6">Card List</Typography>
         <Box display="flex" alignItems="center" gap={2}>
           <Typography variant="body2">Rows per page:</Typography>
           <FormControl size="small">
             <Select
-              value={rowsPerPage.toString()} // ✅ convert to string
+              value={rowsPerPage.toString()}
               onChange={(e) => {
-                setRowsPerPage(parseInt(e.target.value, 10)); // still parse as number
+                setRowsPerPage(parseInt(e.target.value, 10));
                 setPage(0);
               }}
             >
-
               {[5, 10, 20].map((count) => (
-                <MenuItem key={count} value={count}>
-                  {count}
-                </MenuItem>
+                <MenuItem key={count} value={count}>{count}</MenuItem>
               ))}
             </Select>
           </FormControl>
@@ -299,22 +197,10 @@ const CardList = () => {
         </Box>
       </Box>
 
-      {/* <CustomTable
-        columns={columns}
-        rows={rows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)}
-        page={page}
-        rowsPerPage={rowsPerPage}
-        onPageChange={(_, newPage) => setPage(newPage)}
-        onRowsPerPageChange={(e) => {
-          setRowsPerPage(parseInt(e.target.value, 10));
-          setPage(0);
-        }}
-      /> */}
       <GenericTable
         columns={transformedColumns}
         data={rows}
       />
-
 
       {isModalOpen && selectedCard && (
         <CustomModal

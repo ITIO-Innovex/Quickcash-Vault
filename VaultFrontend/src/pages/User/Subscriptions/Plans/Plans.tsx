@@ -153,18 +153,17 @@ const PlansList = () => {
 
                 <CardActions className="p-3">
                  <CustomButton
-  fullWidth
-  onClick={() => handleSubscribe(plan)} // 🔥 important
-  sx={{
-    backgroundColor: "#483594",
-    "&:hover": {
-      backgroundColor: "#3a296f",
-    },
-  }}
->
-  Subscribe
-</CustomButton>
-
+                  fullWidth
+                  onClick={() => handleSubscribe(plan)} // 🔥 important
+                  sx={{
+                    backgroundColor: "#483594",
+                    "&:hover": {
+                      backgroundColor: "#3a296f",
+                    },
+                  }}
+                >
+                  Subscribe
+                </CustomButton>
                 </CardActions>
               </Card>
             </Slide>

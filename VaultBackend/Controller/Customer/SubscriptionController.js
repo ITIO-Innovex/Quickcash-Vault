@@ -284,7 +284,7 @@ module.exports = {
   const userId = req.user._id || req.user.id;
   const { paymentId, invoiceId, type, accountId, currency, anyCurrency } = req.body;
 
-  if (!invoiceId || !type || !accountId || !currency || typeof anyCurrency !== 'boolean') {
+  if (!invoiceId || !type || !accountId || typeof anyCurrency !== 'boolean') {
     return res.status(400).json({
       status: 400,
       message: "Missing required fields: invoiceId, type, accountId, currency, anyCurrency",
@@ -345,9 +345,9 @@ module.exports = {
   },
   confirmPayment: async (req, res) => {
     const userId = req.user._id || req.user.id;
-    const { paymentId, invoiceId, type, accountId, currency, anyCurrency } = req.body;
+    const { paymentId, invoiceId, type, accountId, anyCurrency } = req.body;
   
-    if (!invoiceId || !type || !accountId ||!anyCurrency) {
+    if (!invoiceId || !type || !accountId) {
       return res.status(400).json({
         status: 400,
         message: "invoiceId, type, and accountId are required",
@@ -373,7 +373,6 @@ module.exports = {
         type,
         accountId,
         ...(paymentId && { paymentId }),
-        ...(currency && { currency }),
         anyCurrency,
       };
   
@@ -404,7 +403,7 @@ module.exports = {
       });
     }
   },
-  updatePayment: async (req, res) => {
+  updateInvoicePayment: async (req, res) => {
     const userId = req.user._id || req.user.id;
     const { paymentId, invoiceId, type, accountId, currency, anyCurrency } = req.body; // Using body params
 

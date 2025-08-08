@@ -460,49 +460,45 @@ getBalanceLogById : async (req, res) => {
   }
 },
 getBalance : async (req, res) => {
-  const userId = req.user._id || req.user.id;
-
-  // Fetch the user's vault details
-  const getData = await fetchVaultDetails(userId);
-  const vaultToken = getData?.vaultUser?.access_token;
-
-  // Check if vaultToken exists
-  if (!vaultToken) {
-    return res.status(401).json({
-      status: 401,
-      message: "Vault access token not found",
-      data: null,
-    });
-  }
-
-  // URL for fetching balance
-  const url = `${VAULT_BASE_URL}/wallet/v1/balance`;
-
   try {
-    // Make the GET request to fetch the balance
+    console.log("Inside getBalance function");
+    const userId = req.user._id || req.user.id;
+
+    // Fetch user's vault details to get token
+    const getData = await fetchVaultDetails(userId);
+    const vaultToken = getData?.vaultUser?.access_token;
+
+    if (!vaultToken) {
+      return res.status(401).json({
+        status: 401,
+        message: "Vault access token not found",
+        data: null,
+      });
+    }
+    console.log("✅ Vault Token Found, fetching total wallet balance for user:", userId);
+    // URL to hit
+    const url = `${VAULT_WALLET_URL}/v1/balance`;
+
+    // Make GET request with headers including Vault token
     const response = await axios.get(url, {
       headers: {
-        Authorization: `Bearer ${vaultToken}`,
-        ...VAULT_HEADERS(),
+        Authorization: `Bearer ${vaultToken}`
       },
     });
 
-    // Log the response from the Vault API
-    console.log("Vault API Response:", response.data);
-
-    // Return the response to the client
+    // Send back the balance response
     return res.status(200).json({
       status: 200,
-      message: "Balance fetched successfully",
+      message: 'Balance fetched successfully',
       data: response.data,
     });
+
   } catch (error) {
-    // Handle errors
-    console.error("Error fetching balance:", error);
-    return res.status(500).json({
-      status: 500,
-      message: error?.response?.data?.message || "Error fetching balance",
-      data: error?.response?.data || null,
+    console.error('Error fetching balance:', error.response?.data || error.message || error);
+    return res.status(error.response?.status || 500).json({
+      status: error.response?.status || 500,
+      message: error.response?.data?.message || 'Error fetching balance',
+      data: error.response?.data || null,
     });
   }
 },
