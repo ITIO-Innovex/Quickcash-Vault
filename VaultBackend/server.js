@@ -5,7 +5,8 @@ const cors = require('cors');
 const mongoose = require('mongoose');
 const KycRoutes = require('./Routes/Customer/KycRoutes');
 const AuthCustomerRoutes = require('./Routes/Customer/AuthRoutes');
-const allowedOrigins = ['http://localhost:5173', 'http://localhost:3000'];
+const WalletRoutes = require('./Routes/Customer/WalletRoutes');
+const allowedOrigins = ['http://localhost:5173', 'http://localhost:3000','*'];
 
 app.use(cors({
   origin: function (origin, callback) {
@@ -18,7 +19,6 @@ app.use(cors({
   credentials: true,
 }));
 
-
 app.use(express.json()); 
 
 mongoose.connect(process.env.MONGO_URI)
@@ -28,9 +28,15 @@ mongoose.connect(process.env.MONGO_URI)
 // Routes
 app.use('/api/kyc',KycRoutes);
 app.use('/api/customer', AuthCustomerRoutes);
-app.use('/api/wallet', require('./Routes/Customer/WalletRoutes'));
+app.use('/api/wallet', WalletRoutes);
+app.use('/api/mfa', require('./Routes/Customer/MfaRoutes'));
+app.use('/api/iban', require('./Routes/Customer/IbanRoutes'));
+app.use('/api/card', require('./Routes/Customer/CardsRoutes'));
+app.use('/api/currency', require('./Routes/Customer/CurrencyRoute'));
 app.use('/api/referral', require('./Routes/Customer/ReferralRoutes'));
+app.use('/api/operation', require('./Routes/Customer/OperationRoutes'));
 app.use('/api/countries', require('./Routes/Customer/CountriesRoutes'));
+app.use('/api/blockchain', require('./Routes/Customer/BlockchainRoute'));
 app.use('/api/subscription', require('./Routes/Customer/SubscriptionRoutes'));
 
 const PORT = process.env.PORT || 5000;  
