@@ -1,24 +1,25 @@
-import {
-  Menu as MenuIcon,
-} from 'lucide-react';
-import {
-  Box,
-  List,
-  ListItem,
-  ListItemIcon,
-  ListItemText,
-  Typography,
-  IconButton,
-  useTheme,
-  Popper,
-  Paper,
-  ClickAwayListener,
-  ListItemButton,
-} from '@mui/material';
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import { useState } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
 import clsx from 'clsx';
+import { useState } from 'react';
+import { Menu as MenuIcon,} from 'lucide-react';
+import { useLocation, useNavigate } from 'react-router-dom';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import DashboardIcon from '@mui/icons-material/Dashboard';
+import CreditCardIcon from '@mui/icons-material/CreditCard';
+import SyncAltIcon from '@mui/icons-material/SyncAlt';
+import ReceiptLongIcon from '@mui/icons-material/ReceiptLong';
+import CurrencyBitcoinIcon from '@mui/icons-material/CurrencyBitcoin';
+import SubscriptionsIcon from '@mui/icons-material/Subscriptions';
+import AccountBalanceIcon from '@mui/icons-material/AccountBalance';
+import PersonIcon from '@mui/icons-material/Person';
+import ApartmentIcon from '@mui/icons-material/Apartment';
+import SupportAgentIcon from '@mui/icons-material/SupportAgent';
+import Diversity3Icon from '@mui/icons-material/Diversity3';
+import EditNoteIcon from '@mui/icons-material/EditNote';
+import RequestQuoteIcon from '@mui/icons-material/RequestQuote';
+import MoneyOffIcon from '@mui/icons-material/MoneyOff';
+import AccountTreeIcon from '@mui/icons-material/AccountTree';
+import {Box,List,ListItem,ListItemIcon,ListItemText,Typography,IconButton,useTheme,Popper,Paper,ListItemButton,
+} from '@mui/material';
 
 type SidebarProps = {
   isOpen: boolean;
@@ -35,35 +36,35 @@ const Sidebar = ({ isOpen, toggleSidebar }: SidebarProps) => {
   const [hoveredItem, setHoveredItem] = useState<any>(null);
 
   const menuItems = [
-    {
-      name: 'Dashboard',
-      icon: 'dashboard',
-      path: '/dashboard',
-
-    },
-    { name: 'Cards', icon: 'credit_card', path: '/cards' },
-    { name: 'Transaction', icon: 'sync_alt', path: '/transactions' },
-    { name: 'Statement', icon: 'receipt_long', path: '/statements' },
-    { name: 'BlockChain', icon: 'currency_bitcoin',
-       hasDropdown: true,
+    { name: 'Dashboard', icon: <DashboardIcon />,path: '/dashboard' },
+    { name: 'Cards', icon: <CreditCardIcon />, hasDropdown: true,
       subItems: [
-        { name: 'Available Blockchains', path: '/blockchain' },
-        { name: 'Wallet', path: '/wallets' },
-      ]  },
+        { name: 'Your Cards', path: '/cards' },
+        { name: 'Card Requests', path: '/card-requests' },
+      ]   },
+    { name: 'Transaction', icon: <SyncAltIcon />, path: '/transactions' },
+    // { name: 'Statement', icon: <ReceiptLongIcon />, path: '/statements' },
+    // { name: 'BlockChain', icon: <AccountTreeIcon />,
+    //    hasDropdown: true,
+    //   subItems: [
+    //     { name: 'Available Blockchains', path: '/blockchain' },
+    //     { name: 'Wallet', path: '/wallets' },
+    //   ]  },
     {
       name: 'Crypto',
-      icon: 'currency_bitcoin',
+      icon: <CurrencyBitcoinIcon />,
       hasDropdown: true,
       subItems: [
         { name: 'Dashboard', path: '/crypto-dashboard' },
-        { name: 'Wallet', path: '/wallet' },
-        { name: 'Spot', path: '/spot' },
-        { name: 'Buy / Sell / Swap', path: '/buysellswap' }
+        { name: 'Wallet', path: '/wallets' },
+        { name: 'Available Blockchains', path: '/blockchain' },
+        // { name: 'Spot', path: '/spot' },
+        // { name: 'Buy / Sell / Swap', path: '/buysellswap' }
       ]
     },
      {
       name: 'Subscriptions',
-      icon: 'subscriptions',
+      icon: <SubscriptionsIcon />,
       hasDropdown: true,
       subItems: [
         { name: 'All Plans', path: '/all-plans' },
@@ -72,32 +73,31 @@ const Sidebar = ({ isOpen, toggleSidebar }: SidebarProps) => {
     },
      {
     name: 'Account',
-    icon: 'account_balance',
+    icon: <AccountBalanceIcon />,
     path: '/wallet-accounts',
   },
   
-    { name: 'User Profile', icon: 'person', path: '/user-profile' },
-    { name: 'Business', icon: 'apartment', path: '/register-business' },
-    { name: 'Tickets', icon: 'support_agent', path: '/help-center' },
-    { name: 'Refer & Earn', icon: 'diversity_3', path: '/refer-earn' },
-    { name: 'Digital Signature', icon: 'edit_note', path: '/digital-signature' },
+    { name: 'User Profile', icon: <PersonIcon />, path: '/user-profile' },
+     { name: 'Currency', icon: < MoneyOffIcon />,
+       hasDropdown: true,
+      subItems: [
+        { name: 'Currency List', path: '/currency' },
+        { name: 'Tokens List', path: '/tokens' },
+        { name: 'Summary Tokens List', path: '/summary-tokens' },
+        { name: 'Exchange Pair List', path: '/exchange-pairs' },
+      ]  },
+    { name: 'Business', icon: <ApartmentIcon />, path: '/register-business' },
+    { name: 'Tickets', icon: <SupportAgentIcon />, path: '/help-center' },
+    { name: 'Refer & Earn', icon: <Diversity3Icon />, path: '/refer-earn' },
     {
       name: 'Invoices',
-      icon: 'request_quote',
+      icon: <RequestQuoteIcon />,
       hasDropdown: true,
       subItems: [
         // { name: 'Dashboard', path: '/invoice-dashboard' },
-        // { name: 'Template Settings', path: '/template-settings' },
-        // { name: 'Clients', path: '/clients' },
-        // { name: 'Transactions', path: '/invoice-transactions' },
-        // { name: 'Category', path: '/invoice-category' },
-        // { name: 'Products', path: '/invoice-products' },
-        // { name: 'Quotes', path: '/invoice-quotes' },
         { name: 'Original Invoices', path: '/original-invoices' },
         { name: 'Recurring Invoices', path: '/recurring-invoices' },
-        { name: 'Toast Demo', path: '/demo' },
-        // { name: 'Manual Invoice Payment', path: '/manual-payment' },
-        // { name: 'Settings', path: '/settings' },
+        // { name: 'Toast Demo', path: '/demo' },
       ]
     },
   ];

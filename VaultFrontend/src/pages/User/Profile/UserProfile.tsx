@@ -1,15 +1,15 @@
-import React, { useEffect, useState } from 'react';
-import { Box, Container, useMediaQuery } from '@mui/material';
-import { useTheme } from '@mui/material/styles';
-import UserInformation from './UserInformation';
-import TabNavigation from './TabNavigation';
+import Mfa from './MultiFactorAuth';
+import UserScope from './UserScopes';
 import AccountsList from './AccountsList';
-import BeneficiaryAccountsList from './BeneficiaryAccountsList';
 import LoginHistory from './LoginHistory';
 import SecurityForm from './SecurityForm';
-import UpdateDetails from './UpdateDetails';
-import Documents from './Documents';
-import UserScope from './UserScopes';
+import TabNavigation from './TabNavigation';
+import UpdateKYC from './UpdateKYC';
+import { useEffect, useState } from 'react';
+import { useTheme } from '@mui/material/styles';
+import UserInformation from './UserInformation';
+import { Box, Container, useMediaQuery } from '@mui/material';
+import BeneficiaryAccountsList from './BeneficiaryAccountsList';
 
 interface VaultUser {
   email: string;
@@ -56,20 +56,20 @@ const UserProfile = () => {
     'User Information',
     'Session History',
     'Security',
-    'Update Details',
-    'Documents'
+    'Update KYC',
+    'MFA'
   ];
 
-  const subTabs = ['User Scopes', 'Accounts List', 'Beneficiary Accounts List'];
+  const subTabs = ['User Scopes'];
 
   const renderSubTabContent = () => {
     switch (activeSubTab) {
       case 'User Scopes':
         return <UserScope userScopes={userData?.userScopes || []} />;
-      case 'Accounts List':
-        return <AccountsList />;
-      case 'Beneficiary Accounts List':
-        return <BeneficiaryAccountsList />;
+      // case 'Accounts List':
+      //   return <AccountsList />;
+      // case 'Beneficiary Accounts List':
+      //   return <BeneficiaryAccountsList />;
       default:
         return <UserScope userScopes={userData?.userScopes || []} />;
     }
@@ -99,10 +99,10 @@ const UserProfile = () => {
         return <LoginHistory />;
       case 'Security':
         return <SecurityForm />;
-      case 'Update Details':
-        return <UpdateDetails />;
-      case 'Documents':
-        return <Documents />;
+      // case 'Update KYC':
+      //   return <UpdateKYC />;
+      case 'MFA':
+        return < Mfa/>;
       default:
         return (
           <Box sx={{ p: 3, textAlign: 'center', color: theme.palette.text.secondary }}>

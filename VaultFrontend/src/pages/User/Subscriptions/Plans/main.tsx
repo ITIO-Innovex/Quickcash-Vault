@@ -7,10 +7,9 @@ const main = () => {
   return (
    <Box className="dashboard-container" sx={{ backgroundColor: theme.palette.background.default }}>
       <PageHeader title="Available Plans"/>
-      
       <SubscriptionList />
       </Box>
   )
 }
 
-export default main
+export default main;

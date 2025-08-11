@@ -32,11 +32,12 @@ const Header: React.FC<HeaderProps> = ({ collapsed }) => {
   };
   const { logout } = useAuth();
 const handleLogout = () => {
-  localStorage.clear(); 
   logout(); 
+  localStorage.clear();
   toast.success('Logout Successfully!!!');
+  // Optionally redirect after logout
+  window.location.href = '/'; // or use navigate('/') if you're using react-router-dom v6
 };
-
   return (
     <>
       <Box

@@ -103,8 +103,8 @@ getWalletAccountById: async (req, res) => {
 },
 getWalletAddress: async (req, res) => {
   const userId = req.user._id || req.user.id;
-  const { accountId, blockchain } = req.query;
-
+  const { accountId, blockchain, addressIndex,currency } = req.query;
+  console.log(`Account ID: ${accountId} BlockChainId: ${blockchain}`);
   // Check for required params
   if (!accountId || !blockchain) {
     return res.status(400).json({
@@ -126,7 +126,7 @@ getWalletAddress: async (req, res) => {
         data: null,
       });
     }
-
+    console.log('🔵 [getWalletAddress] Calling Vault Wallet Address API...');
     const response = await axios.get(`${VAULT_BASE_URL}/wallet/v2/address/`, {
       headers: {
         Authorization: `Bearer ${vaultToken}`,
@@ -135,11 +135,14 @@ getWalletAddress: async (req, res) => {
       params: {
         accountId,
         blockchain,
+        addressIndex,
+        currency
       },
     });
-
+     console.log('✅ [getWalletAddress] Vault wallet address API response:', response?.data);
+     console.log('🔵 [getWalletAddress] Checking if wallet already exists in DB...');
     // Check if the wallet already exists in DB
-    const existingWallet = await Wallet.findOne({ userId, accountId });
+    const existingWallet = await Wallet.findOne({ userId, accountId, blockchain });
 
     if (existingWallet) {
       return res.status(200).json({
@@ -151,7 +154,7 @@ getWalletAddress: async (req, res) => {
 
     // Save wallet address to DB if not exists
     const walletData = response.data;
-
+     console.log('🔵 [getWalletAddress] Saving new wallet to DB:', walletData);
     const newWallet = new Wallet({
       userId,
       accountId: walletData.accountId,
@@ -160,7 +163,7 @@ getWalletAddress: async (req, res) => {
       address: walletData.address,
       type: walletData.type,
     });
-
+     console.log('✅ [getWalletAddress] New wallet saved:', newWallet.address);
     await newWallet.save();  // Save wallet data to DB
 
     return res.status(200).json({
@@ -170,7 +173,7 @@ getWalletAddress: async (req, res) => {
     });
 
   } catch (error) {
-    console.error("❌ Wallet Address Fetch Error:", error?.response?.data || error.message);
+    console.error("❌ Wallet Address Error:", error?.response?.data || error.message);
     return res.status(error?.response?.status || 500).json({
       status: error?.response?.status || 500,
       message: error?.response?.data?.message || "Vault API error or server issue. Please check your subscription benefits.",
@@ -460,49 +463,45 @@ getBalanceLogById : async (req, res) => {
   }
 },
 getBalance : async (req, res) => {
-  const userId = req.user._id || req.user.id;
-
-  // Fetch the user's vault details
-  const getData = await fetchVaultDetails(userId);
-  const vaultToken = getData?.vaultUser?.access_token;
-
-  // Check if vaultToken exists
-  if (!vaultToken) {
-    return res.status(401).json({
-      status: 401,
-      message: "Vault access token not found",
-      data: null,
-    });
-  }
-
-  // URL for fetching balance
-  const url = `${VAULT_BASE_URL}/wallet/v1/balance`;
-
   try {
-    // Make the GET request to fetch the balance
+    console.log("Inside getBalance function");
+    const userId = req.user._id || req.user.id;
+
+    // Fetch user's vault details to get token
+    const getData = await fetchVaultDetails(userId);
+    const vaultToken = getData?.vaultUser?.access_token;
+
+    if (!vaultToken) {
+      return res.status(401).json({
+        status: 401,
+        message: "Vault access token not found",
+        data: null,
+      });
+    }
+    console.log("✅ Vault Token Found, fetching total wallet balance for user:", userId);
+    // URL to hit
+    const url = `${VAULT_WALLET_URL}/v1/balance`;
+
+    // Make GET request with headers including Vault token
     const response = await axios.get(url, {
       headers: {
-        Authorization: `Bearer ${vaultToken}`,
-        ...VAULT_HEADERS(),
+        Authorization: `Bearer ${vaultToken}`
       },
     });
 
-    // Log the response from the Vault API
-    console.log("Vault API Response:", response.data);
-
-    // Return the response to the client
+    // Send back the balance response
     return res.status(200).json({
       status: 200,
-      message: "Balance fetched successfully",
+      message: 'Balance fetched successfully',
       data: response.data,
     });
+
   } catch (error) {
-    // Handle errors
-    console.error("Error fetching balance:", error);
-    return res.status(500).json({
-      status: 500,
-      message: error?.response?.data?.message || "Error fetching balance",
-      data: error?.response?.data || null,
+    console.error('Error fetching balance:', error.response?.data || error.message || error);
+    return res.status(error.response?.status || 500).json({
+      status: error.response?.status || 500,
+      message: error.response?.data?.message || 'Error fetching balance',
+      data: error.response?.data || null,
     });
   }
 },

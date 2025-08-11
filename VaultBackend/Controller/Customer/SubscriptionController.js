@@ -284,7 +284,7 @@ module.exports = {
   const userId = req.user._id || req.user.id;
   const { paymentId, invoiceId, type, accountId, currency, anyCurrency } = req.body;
 
-  if (!invoiceId || !type || !accountId || !currency || typeof anyCurrency !== 'boolean') {
+  if (!invoiceId || !type || !accountId || typeof anyCurrency !== 'boolean') {
     return res.status(400).json({
       status: 400,
       message: "Missing required fields: invoiceId, type, accountId, currency, anyCurrency",
@@ -345,9 +345,9 @@ module.exports = {
   },
   confirmPayment: async (req, res) => {
     const userId = req.user._id || req.user.id;
-    const { paymentId, invoiceId, type, accountId, currency, anyCurrency } = req.body;
+    const { paymentId, invoiceId, type, accountId, anyCurrency } = req.body;
   
-    if (!invoiceId || !type || !accountId ||!anyCurrency) {
+    if (!invoiceId || !type || !accountId) {
       return res.status(400).json({
         status: 400,
         message: "invoiceId, type, and accountId are required",
@@ -373,7 +373,6 @@ module.exports = {
         type,
         accountId,
         ...(paymentId && { paymentId }),
-        ...(currency && { currency }),
         anyCurrency,
       };
   
@@ -404,60 +403,64 @@ module.exports = {
       });
     }
   },
-  updatePayment: async (req, res) => {
-    const userId = req.user._id || req.user.id;
-    const { paymentId, invoiceId, type, accountId, currency, anyCurrency } = req.body; // Using body params
+updateInvoicePayment: async (req, res) => {
+  const userId = req.user._id || req.user.id;  // Get the userId from the authenticated request
+  const { paymentId, invoiceId, type, accountId, anyCurrency } = req.body; // Extracting data from request body
 
-    // Check for required parameters
-    if (!paymentId || !invoiceId || !type || !accountId || !anyCurrency) {
-      return res.status(400).json({
-        status: 400,
-        message: "paymentId, invoiceId, type, accountId, and anyCurrency are required",
+  // Check if the required parameters are provided in the request body
+  if (!paymentId || !invoiceId || !type || !accountId || anyCurrency === undefined) {
+    return res.status(400).json({
+      status: 400,
+      message: "paymentId, invoiceId, type, accountId, and anyCurrency are required",
+      data: null,
+    });
+  }
+
+  try {
+    // Fetch the Vault token using the userId
+    const getData = await fetchVaultDetails(userId);
+    const vaultToken = getData?.vaultUser?.access_token; // Vault token is retrieved
+
+    if (!vaultToken) {
+      return res.status(401).json({
+        status: 401,
+        message: "Vault access token not found",
         data: null,
       });
     }
 
-    try {
-      // Fetch Vault details for token
-      const getData = await fetchVaultDetails(userId);
-      const vaultToken = getData?.vaultUser?.access_token;
+    // Prepare the request body dynamically
+    const requestBody = {
+      paymentId,
+      invoiceId,
+      type,
+      accountId,
+      anyCurrency,
+    };
 
-      if (!vaultToken) {
-        return res.status(401).json({
-          status: 401,
-          message: "Vault access token not found",
-          data: null,
-        });
-      }
+   console.log("Sending request to Vault:", requestBody);
+   console.log(`Vault Token: ${vaultToken}`)
 
-      // Prepare the request body dynamically
-      const requestBody = {
-        paymentId,
-        invoiceId,
-        type,
-        accountId,
-        currency,
-        anyCurrency,
-      };
-
-      // Make the PUT request to update payment information
-      const response = await axios.put(
+   try{
+      const response = await axios.post(
         `${VAULT_BASE_URL}/acquiring/invoice/payment`,
-        requestBody,
-        {
-          headers: {
-            Authorization: `Bearer ${vaultToken}`,
-            ...VAULT_HEADERS(),
-          },
-        }
+         requestBody,
+        { headers: { Authorization: `Bearer ${vaultToken}`, ...VAULT_HEADERS() } }
       );
-
       return res.status(200).json({
         status: 200,
-        message: "Invoice payment updated successfully",
+        message: "Invoice payment request sent successfully",
         data: response.data,
       });
-
+   }catch(err){
+    console.log(err);
+      return res.status(503).json({
+        status: 503,
+        message: "Invoice payment request sent failed",
+        data: err,
+      });
+   }
+  
     } catch (error) {
       console.error("Vault API Error:", error?.response?.data || error.message);
       return res.status(error?.response?.status || 500).json({

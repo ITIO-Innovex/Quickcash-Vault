@@ -22,14 +22,16 @@ const Main = () => {
       }
     });
     const invoiceData = response.data.data;
+    console.log("📄 Invoice data:", invoiceData);
     setInvoice(invoiceData); 
     setOpen(true);
 
     // ✅ Store recurrentInvoiceId in localStorage
-    if (invoiceData?.recurrentInvoiceId) {
-      localStorage.setItem("recurrentInvoiceId", invoiceData.recurrentInvoiceId);
-      // console.log("💾 recurrentInvoiceId stored:", invoiceData.recurrentInvoiceId);
+   const invoiceId = invoiceData.id;
+   if (invoiceId) {
+      localStorage.setItem("InvoiceId", invoiceId);
     }
+    console.log("Invoice ID stored in localStorage:", invoiceId);
 
   } catch (err) {
     alert('Failed to fetch invoice');
@@ -41,7 +43,7 @@ const Main = () => {
 
   return (
     <Box className="dashboard-container" sx={{ backgroundColor: theme.palette.background.default }}>
-     <PageHeader title="My Plans" buttonText={loading ? 'Loading...' : 'Your Invoice'} onButtonClick={handleInvoiceClick} />
+     <PageHeader title="My Plans" buttonText={loading ? 'Loading...' : 'Your Invoice'} loading={loading} onButtonClick={handleInvoiceClick} />
 
       <CurrentSubscriptionCard/>
       <SubscriptionInvoice open={open} invoice={invoice} handleClose={handleClose} />

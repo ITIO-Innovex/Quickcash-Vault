@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import CustomButton from "@/components/CustomButton";
 import { Card, CardContent,Typography,Grid, Chip,useTheme, CardActions, Slide, Box,} from "@mui/material";
+import CommonLoader from "@/components/CommonLoader";
 
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
 
@@ -22,9 +23,10 @@ interface Plan {
 
 const PlansList = () => {
   const theme = useTheme();
+  const [loading, setLoading] = useState(true);
   const [plans, setPlans] = useState<Plan[]>([]);
-  const [subscribedPlanId, setSubscribedPlanId] = useState<string | null>(null);
   const navigate = useNavigate();
+  const [subscribedPlanId, setSubscribedPlanId] = useState<string | null>(null);
   
   const fetchSubscriptions = async () => {
     try {
@@ -41,7 +43,9 @@ const PlansList = () => {
       setPlans(response.data.data || []);
     } catch (error) {
       console.error("❌ Error fetching subscriptions:", error?.response?.data || error.message);
-    }
+    }finally {
+        setLoading(false);   // Loader OFF after response
+      }
   };
 
   const handleSubscribe = async (plan: Plan) => {
@@ -83,10 +87,8 @@ const PlansList = () => {
 
 
  return (
-    <Box className="p-4">
-      <Typography variant="h5" gutterBottom>
-        Available Subscription Plans
-      </Typography>
+    <Box className="dashboard-container" sx={{ backgroundColor: theme.palette.background.default }}>
+       <CommonLoader show={loading} />
       <Grid container spacing={3}>
         {plans.map((plan, index) => (
           <Grid item xs={12} sm={6} md={4} key={plan.id}>
@@ -153,18 +155,17 @@ const PlansList = () => {
 
                 <CardActions className="p-3">
                  <CustomButton
-  fullWidth
-  onClick={() => handleSubscribe(plan)} // 🔥 important
-  sx={{
-    backgroundColor: "#483594",
-    "&:hover": {
-      backgroundColor: "#3a296f",
-    },
-  }}
->
-  Subscribe
-</CustomButton>
-
+                  fullWidth
+                  onClick={() => handleSubscribe(plan)} // 🔥 important
+                  sx={{
+                    backgroundColor: "#483594",
+                    "&:hover": {
+                      backgroundColor: "#3a296f",
+                    },
+                  }}
+                >
+                  Subscribe
+                </CustomButton>
                 </CardActions>
               </Card>
             </Slide>
