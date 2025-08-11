@@ -9,7 +9,8 @@ interface HeaderProps {
   title: string;
   buttonText?: string;
   onButtonClick?: () => void;
-  showBackButton?: boolean; // optional flag
+  showBackButton?: boolean;
+    loading?: boolean; 
 }
 
 const PageHeader: React.FC<HeaderProps> = ({
@@ -17,6 +18,7 @@ const PageHeader: React.FC<HeaderProps> = ({
   buttonText,
   onButtonClick,
   showBackButton = true,
+  loading,
 }) => {
   const theme = useTheme();
   const navigate = useNavigate();
@@ -49,8 +51,10 @@ const PageHeader: React.FC<HeaderProps> = ({
             className="custom-button"
             onClick={onButtonClick}
             disabled={!onButtonClick}
+            loading={loading}   
           >
-           {buttonText !== 'Your Invoice' && buttonText !== 'Total Balance' && buttonText !== 'Calculate Rates' && buttonText !== 'Loading...' && <AddIcon className="icon-size" />}
+           {buttonText !== 'Your Invoice' && buttonText !== 'Total Balance' && buttonText !== 'Calculate Rates' &&  buttonText !== 'Loading...' &&
+     !loading                    && <AddIcon className="icon-size" />}
             <span className="button-text">{buttonText}</span>
           </CustomButton>
 

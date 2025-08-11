@@ -3,7 +3,7 @@ const { VAULT_BASE_URL } = require('../../Config/VaultConfig');
 const { fetchVaultDetails } = require("../../Utils/fetchVaultDetails");
 
 module.exports = {
-    switchMfaAuthorization : async (req, res) => {
+   switchMfaAuthorization : async (req, res) => {
     try {
 
         // API call to the external endpoint (NO Authorization header!)
@@ -56,5 +56,5 @@ module.exports = {
         error: error?.message
         });
     }
-    },
+   },
 }

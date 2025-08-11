@@ -10,13 +10,14 @@ const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
 const Main = () => {
   const theme = useTheme();
   const navigate = useNavigate();
-
+  const [loading, setLoading] = useState(false);
   // State to handle modal visibility and data
   const [openModal, setOpenModal] = useState(false);
   const [balanceData, setBalanceData] = useState(null);
 
   // Handle button click to fetch balance
   const fetchBalance = async () => {
+    setLoading(true); 
     try {
       const token = localStorage.getItem('token');
       const response = await axios.get(`${API_URL}/wallet/balance-all`, {
@@ -33,7 +34,9 @@ const Main = () => {
       setOpenModal(true);
     } catch (error) {
       console.error('Error fetching balance:', error);
-    }
+    }finally {
+    setLoading(false); // Loader off
+  }
   };
 
   // Handle modal close
@@ -44,11 +47,8 @@ const Main = () => {
 
   return (
     <Box className="dashboard-container" sx={{ backgroundColor: theme.palette.background.default }}>
-      <PageHeader 
-        title="Wallet Accounts" 
-        buttonText='Total Balance'
-        onButtonClick={fetchBalance}  // Call the function on button click
-      />
+      <PageHeader  title="Wallet Accounts"  buttonText={loading ? "Loading..." : "Total Balance"}  loading={loading} onButtonClick={fetchBalance}  // Call the function on button click
+/>
       <AllAccounts />
       
       {/* Custom Modal for displaying balance */}

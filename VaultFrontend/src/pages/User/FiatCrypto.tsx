@@ -278,21 +278,21 @@ const FiatCrypto = () => {
             </Box>
 
             {activeTab === 'Fiat' && (
-                //   ibanLoading ? (
-                //     <Box textAlign="center" py={6}>
-                //     Loading...
-                //     </Box>
-                // ) : ibanAccounts.length === 0 ? (
-                //     <Box textAlign="center" py={7}>
-                //     <Typography variant="h6" color="primary" fontWeight="bold">
-                //         No IBAN found
-                //     </Typography>
-                //     <Typography variant="body1" sx={{ mt: 1 }}>
-                //         Create an&nbsp;
-                //         <a href="" style={{ color: '#845ec2', textDecoration: 'underline', fontWeight: 500,cursor:'pointer' }}onClick={handleIbanModalOpen} > IBAN issuance request </a>
-                //     </Typography>
-                //     </Box>
-                // ) : (
+                  ibanLoading ? (
+                    <Box textAlign="center" py={6}>
+                    Loading...
+                    </Box>
+                ) : ibanAccounts.length === 0 ? (
+                    <Box textAlign="center" py={7}>
+                    <Typography variant="h6" color="primary" fontWeight="bold">
+                        No IBAN found
+                    </Typography>
+                    <Typography variant="body1" sx={{ mt: 1 }}>
+                        Create an&nbsp;
+                        <a href="" style={{ color: '#845ec2', textDecoration: 'underline', fontWeight: 500,cursor:'pointer' }}onClick={handleIbanModalOpen} > IBAN issuance request </a>
+                    </Typography>
+                    </Box>
+                ) : (
               <Box>
                 {/* Header Section */}
                 <Box className="header-section" sx={{ flexDirection: { xs: 'column', sm: 'row' }, alignItems: { xs: 'flex-start', sm: 'center' }, }} >
@@ -381,7 +381,7 @@ const FiatCrypto = () => {
                   })}
                 </Swiper>
               </Box>
-                // )
+                )
             )}
 
             {activeTab === 'Crypto' && (

@@ -154,13 +154,13 @@ const FirstSection = () => {
   try {
     setLoading(true);
     const token = localStorage.getItem('token');
+    console.log('Token from ls',token);
     if (!token) {
       console.warn('Token not found in localStorage');
       return;
     }
 
     const response = await api.get(`${API_URL}/wallet/address`, {
-      headers: { Authorization: `Bearer ${token}` },
       params: {
         accountId: selectedAccount || formData.accountId,
         blockchain: formData.blockchain,
@@ -221,9 +221,9 @@ const FirstSection = () => {
 
           {/* Account ID field (auto-filled after selection) */}
           <CustomInput label="Account ID" name="accountId" value={formData.accountId} onChange={handleInputChange} required />
-          <CustomInput label="Address Index" name="addressIndex" value={formData.addressIndex} onChange={handleInputChange} />
+          <CustomInput label="Address Index" name="addressIndex" value={formData.addressIndex} onChange={handleInputChange} required />
           <CustomInput label="Blockchain Slug" name="blockchain" value={formData.blockchain} onChange={handleInputChange} required />
-          <CustomInput label="Currency" name="currency" value={formData.currency} onChange={handleInputChange} />
+          <CustomInput label="Currency" name="currency" value={formData.currency} onChange={handleInputChange} required />
           {/* Show loading spinner on button */}
           <CustomButton onClick={createWallet} variant="contained" color="primary" disabled={!isFormValid || loading}>
             {loading ? <CircularProgress size={24} /> : 'Create Wallet'}

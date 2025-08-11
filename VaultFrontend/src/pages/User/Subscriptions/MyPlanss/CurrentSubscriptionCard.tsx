@@ -1,12 +1,19 @@
 import axios from 'axios';
 import dayjs from 'dayjs';
+import Link from '@mui/material/Link';
 import { motion } from 'framer-motion';
 import { useEffect, useState } from 'react';
-import { Card, CardContent, Typography, Chip } from '@mui/material';
+import CustomNoteBox from '@/components/CustomNote';
+import { Link as RouterLink } from 'react-router-dom';
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
+import { Card, CardContent, Typography, Chip, Box, useTheme } from '@mui/material';
+import CommonLoader from '@/components/CommonLoader';
 
 const CurrentSubscriptionCard = () => {
+  const theme = useTheme();
+  const [loading, setLoading] = useState(true);
  const [subscription, setSubscription] = useState<any>(null);
+
   useEffect(() => {
     const fetchCurrentSubscription = async () => {
       try {
@@ -21,22 +28,33 @@ const CurrentSubscriptionCard = () => {
         setSubscription(response.data.data);
       } catch (error) {
         console.error('❌ Error fetching current subscription:', error);
+      }finally {
+        setLoading(false);   // Loader OFF after response
       }
     };
 
     fetchCurrentSubscription();
   }, []);
 
-  if (!subscription) return null;
+  if (loading) {
+  return <CommonLoader show={true} />;
+}
+if (!subscription) {
+  return null;
+}
 
   const { subscriptionDetails, status, createdAt, nextPaymentDate, lastPaymentInvoiceStatus } = subscription;
  return (
-    <motion.div
-    whileHover={{ scale: 1.02 }}
-    whileTap={{ scale: 0.98 }}
-    className="glossy-wrapper"
-  >
+    <Box className="dashboard-container" sx={{ backgroundColor: theme.palette.background.default }}>
+    <CustomNoteBox>
+    Before paying the invoice, make sure you have generated and topped up your wallet. We recommend topping up and making the payment using ETH.<Link component={RouterLink} to="/blockchain" color="primary" underline="always" style={{ cursor: 'pointer', fontWeight: 600 }}>
+    Go to Blockchain
+    </Link>
+    </CustomNoteBox>
+    
+    <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }} className="glossy-wrapper">
     <Card className="subscription-card">
+
       <span className="shine" />
       <CardContent className="card-content animate-fade-in">
         <Typography variant="h5" className="plan-name">{subscriptionDetails?.name}</Typography>
@@ -86,6 +104,7 @@ const CurrentSubscriptionCard = () => {
       </CardContent>
     </Card>
     </motion.div>
+    </Box>
   );
 };
 

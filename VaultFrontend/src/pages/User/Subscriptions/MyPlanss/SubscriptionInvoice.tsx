@@ -5,6 +5,7 @@ import { Box, Button, Typography, Grid, Chip, } from '@mui/material';
 import CustomButton from '@/components/CustomButton';
 
 const SubscriptionInvoice = ({ open, invoice, handleClose }: any) => {
+  const [loading, setLoading] = useState(false);
   const [walletModalOpen, setWalletModalOpen] = useState(false);
 const detailItem = (label: string, value: React.ReactNode) => (
 
@@ -51,10 +52,12 @@ const detailItem = (label: string, value: React.ReactNode) => (
             </Grid>
           </Grid>
           <Box mt={4} textAlign="right">
-            <CustomButton 
-              onClick={() => setWalletModalOpen(true)}  >
-              Initialize Payment
-            </CustomButton>
+           <CustomButton 
+            onClick={() => setWalletModalOpen(true)} 
+            loading={loading}>
+            {loading ? 'Loading...' : 'Initialize Payment'}
+          </CustomButton>
+
           </Box>
           <WalletModal open={walletModalOpen} onClose={() => setWalletModalOpen(false)} />
         </Box>

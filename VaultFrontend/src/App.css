@@ -7602,6 +7602,7 @@ color: var(--bs-primary);
 }
 
 .glossy-wrapper {
+  margin-top: 2rem;
   position: relative;
   border-radius: 16px;
 }

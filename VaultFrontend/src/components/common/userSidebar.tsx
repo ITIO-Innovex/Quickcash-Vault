@@ -43,22 +43,23 @@ const Sidebar = ({ isOpen, toggleSidebar }: SidebarProps) => {
         { name: 'Card Requests', path: '/card-requests' },
       ]   },
     { name: 'Transaction', icon: <SyncAltIcon />, path: '/transactions' },
-    { name: 'Statement', icon: <ReceiptLongIcon />, path: '/statements' },
-    { name: 'BlockChain', icon: <AccountTreeIcon />,
-       hasDropdown: true,
-      subItems: [
-        { name: 'Available Blockchains', path: '/blockchain' },
-        { name: 'Wallet', path: '/wallets' },
-      ]  },
+    // { name: 'Statement', icon: <ReceiptLongIcon />, path: '/statements' },
+    // { name: 'BlockChain', icon: <AccountTreeIcon />,
+    //    hasDropdown: true,
+    //   subItems: [
+    //     { name: 'Available Blockchains', path: '/blockchain' },
+    //     { name: 'Wallet', path: '/wallets' },
+    //   ]  },
     {
       name: 'Crypto',
       icon: <CurrencyBitcoinIcon />,
       hasDropdown: true,
       subItems: [
         { name: 'Dashboard', path: '/crypto-dashboard' },
-        { name: 'Wallet', path: '/wallet' },
-        { name: 'Spot', path: '/spot' },
-        { name: 'Buy / Sell / Swap', path: '/buysellswap' }
+        { name: 'Wallet', path: '/wallets' },
+        { name: 'Available Blockchains', path: '/blockchain' },
+        // { name: 'Spot', path: '/spot' },
+        // { name: 'Buy / Sell / Swap', path: '/buysellswap' }
       ]
     },
      {
@@ -88,24 +89,15 @@ const Sidebar = ({ isOpen, toggleSidebar }: SidebarProps) => {
     { name: 'Business', icon: <ApartmentIcon />, path: '/register-business' },
     { name: 'Tickets', icon: <SupportAgentIcon />, path: '/help-center' },
     { name: 'Refer & Earn', icon: <Diversity3Icon />, path: '/refer-earn' },
-    { name: 'Digital Signature', icon: <EditNoteIcon />, path: '/digital-signature' },
     {
       name: 'Invoices',
       icon: <RequestQuoteIcon />,
       hasDropdown: true,
       subItems: [
         // { name: 'Dashboard', path: '/invoice-dashboard' },
-        // { name: 'Template Settings', path: '/template-settings' },
-        // { name: 'Clients', path: '/clients' },
-        // { name: 'Transactions', path: '/invoice-transactions' },
-        // { name: 'Category', path: '/invoice-category' },
-        // { name: 'Products', path: '/invoice-products' },
-        // { name: 'Quotes', path: '/invoice-quotes' },
         { name: 'Original Invoices', path: '/original-invoices' },
         { name: 'Recurring Invoices', path: '/recurring-invoices' },
-        { name: 'Toast Demo', path: '/demo' },
-        // { name: 'Manual Invoice Payment', path: '/manual-payment' },
-        // { name: 'Settings', path: '/settings' },
+        // { name: 'Toast Demo', path: '/demo' },
       ]
     },
   ];

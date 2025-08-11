@@ -26,5 +26,5 @@ router.post('/invoice/payment', verifyOurToken, checkVaultToken, payInvoice);
 // Confirm Payment
 router.post('/invoice/payment/confirm',verifyOurToken, checkVaultToken, confirmPayment);
 //  Update Payment
-router.put('/payment/update', verifyOurToken, checkVaultToken, updateInvoicePayment);
+router.post('/invoice/payment/update', verifyOurToken, checkVaultToken, updateInvoicePayment);
 module.exports = router;

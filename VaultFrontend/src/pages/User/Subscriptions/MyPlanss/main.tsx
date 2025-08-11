@@ -43,7 +43,7 @@ const Main = () => {
 
   return (
     <Box className="dashboard-container" sx={{ backgroundColor: theme.palette.background.default }}>
-     <PageHeader title="My Plans" buttonText={loading ? 'Loading...' : 'Your Invoice'} onButtonClick={handleInvoiceClick} />
+     <PageHeader title="My Plans" buttonText={loading ? 'Loading...' : 'Your Invoice'} loading={loading} onButtonClick={handleInvoiceClick} />
 
       <CurrentSubscriptionCard/>
       <SubscriptionInvoice open={open} invoice={invoice} handleClose={handleClose} />

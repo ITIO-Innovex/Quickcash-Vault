@@ -4,7 +4,7 @@ import AccountsList from './AccountsList';
 import LoginHistory from './LoginHistory';
 import SecurityForm from './SecurityForm';
 import TabNavigation from './TabNavigation';
-import UpdateDetails from './UpdateDetails';
+import UpdateKYC from './UpdateKYC';
 import { useEffect, useState } from 'react';
 import { useTheme } from '@mui/material/styles';
 import UserInformation from './UserInformation';
@@ -56,20 +56,20 @@ const UserProfile = () => {
     'User Information',
     'Session History',
     'Security',
-    'Update Details',
+    'Update KYC',
     'MFA'
   ];
 
-  const subTabs = ['User Scopes', 'Accounts List', 'Beneficiary Accounts List'];
+  const subTabs = ['User Scopes'];
 
   const renderSubTabContent = () => {
     switch (activeSubTab) {
       case 'User Scopes':
         return <UserScope userScopes={userData?.userScopes || []} />;
-      case 'Accounts List':
-        return <AccountsList />;
-      case 'Beneficiary Accounts List':
-        return <BeneficiaryAccountsList />;
+      // case 'Accounts List':
+      //   return <AccountsList />;
+      // case 'Beneficiary Accounts List':
+      //   return <BeneficiaryAccountsList />;
       default:
         return <UserScope userScopes={userData?.userScopes || []} />;
     }
@@ -99,8 +99,8 @@ const UserProfile = () => {
         return <LoginHistory />;
       case 'Security':
         return <SecurityForm />;
-      case 'Update Details':
-        return <UpdateDetails />;
+      // case 'Update KYC':
+      //   return <UpdateKYC />;
       case 'MFA':
         return < Mfa/>;
       default:
