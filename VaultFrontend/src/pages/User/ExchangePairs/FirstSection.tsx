@@ -3,7 +3,7 @@ import axios from 'axios';
 import GenericTable from '@/components/common/genericTable';
 import { Box } from '@mui/material';
 
-const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
+const url = import.meta.env.VITE_NODE_ENV === "production" ? "api" : "api";
 
 const FirstSection = () => {
   const [data, setData] = useState([]);
@@ -18,7 +18,7 @@ const FirstSection = () => {
           return;
         }
 
-        const response = await axios.get(`${API_URL}/blockchain/exchange-pairs`, {
+        const response = await axios.get(`${url}/blockchain/exchange-pairs`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },

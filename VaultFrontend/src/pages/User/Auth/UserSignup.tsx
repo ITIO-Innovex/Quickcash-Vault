@@ -18,7 +18,7 @@ import CommonTooltip from '@/components/common/toolTip';
 const UserSignup = () => {
   const theme = useTheme();
   const navigate = useNavigate();
-  const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+  const url = import.meta.env.VITE_NODE_ENV === "production" ? "api" : "api";
   const [step, setStep] = useState(1);
   const [loading, setLoading] = useState(false);
   const [apiError, setApiError] = useState('');
@@ -49,7 +49,7 @@ const UserSignup = () => {
 
     try {
       const response = await axios.post(
-        `${API_URL}/customer/signup`,
+        `${url}/customer/signup`,
         {
           email: formData.email,
           password: formData.password,
@@ -78,7 +78,7 @@ const UserSignup = () => {
 
     try {
       const response = await axios.post(
-        `${API_URL}/customer/confirm`,
+        `${url}/customer/confirm`,
         {
           email: formData.email,
           password: formData.password,

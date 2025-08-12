@@ -12,7 +12,7 @@ import PageHeader from "@/components/common/pageHeader";
 import CommonTooltip from "@/components/common/toolTip";
 import GenericTable from "@/components/common/genericTable";
 import AttachMoneyIcon from '@mui/icons-material/AttachMoney';
-import  InvoicePayment from "../../../../modal/invoiePaymentModal";
+import  InvoicePayment from "../../../../modal/invoiceModal";
 const url = import.meta.env.VITE_NODE_ENV === "production" ? "api" : "api";
 import { Box,CircularProgress, IconButton, Typography, useTheme } from "@mui/material";
 import CardOffers from "./availableCardOffers";
@@ -431,8 +431,7 @@ const handleDeliveryChange = (e) => setDelivery(prev => ({
         
         {/* Modal for Invoice Payment */}
         <InvoicePayment open={open} invoice={invoice} handleClose={handleClose} />
-
-            </Box>
+        </Box>
   );
 };
 

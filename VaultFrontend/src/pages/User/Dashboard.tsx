@@ -11,7 +11,7 @@ import CustomButton from '@/components/CustomButton';
 import TransactionHistory from './TransactionHistoryCopyTable';
 import PageHeader from '@/components/common/pageHeader';
 import { Box, useTheme, Typography,CircularProgress} from '@mui/material';
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+const url = import.meta.env.VITE_NODE_ENV === "production" ? "api" : "api";
 
 import CustomModal from '@/components/CustomModal';
 import { c } from 'vite/dist/node/moduleRunnerTransport.d-DJ_mE5sf';
@@ -26,7 +26,7 @@ const UserDashboard = () => {
 
   const fetchKycStatus = async () => {
     try {
-      const res = await axios.get(`${API_URL}/customer/kyc-status`, {
+      const res = await axios.get(`${url}/customer/kyc-status`, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem('token')}`,
         },

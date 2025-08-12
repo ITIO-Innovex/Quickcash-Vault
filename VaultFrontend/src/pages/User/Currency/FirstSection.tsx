@@ -4,7 +4,7 @@ import { toast } from 'react-toastify'; // For error handling
 import { Box, Typography } from '@mui/material';
 import GenericTable from '@/components/common/genericTable';
 
-const API_URL = 'http://localhost:5000/api';
+const url = import.meta.env.VITE_NODE_ENV === "production" ? "api" : "api";
 
 const CurrencyDataPage = () => {
   const [currencyData, setCurrencyData] = useState([]);
@@ -20,7 +20,7 @@ const CurrencyDataPage = () => {
           return;
         }
 
-        const response = await axios.get(`${API_URL}/currency/all`, {
+        const response = await axios.get(`${url}/currency/all`, {
           headers: { Authorization: `Bearer ${token}` },
         });
 

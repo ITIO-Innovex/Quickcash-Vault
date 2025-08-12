@@ -5,7 +5,7 @@ import { motion } from 'framer-motion';
 import { useEffect, useState } from 'react';
 import CustomNoteBox from '@/components/CustomNote';
 import { Link as RouterLink } from 'react-router-dom';
-const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
+const url = import.meta.env.VITE_NODE_ENV === "production" ? "api" : "api";
 import { Card, CardContent, Typography, Chip, Box, useTheme } from '@mui/material';
 import CommonLoader from '@/components/CommonLoader';
 
@@ -22,7 +22,7 @@ const CurrentSubscriptionCard = () => {
         console.warn("Token not found in localStorage");
         return;
       }
-          const response = await axios.get(`${API_URL}/subscription/current`, {
+          const response = await axios.get(`${url}/subscription/current`, {
                 headers: { Authorization: `Bearer ${token}` },
               }); 
         setSubscription(response.data.data);

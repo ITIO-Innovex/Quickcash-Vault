@@ -5,7 +5,7 @@ import PageHeader from '@/components/common/pageHeader';
 import AllAccounts from './AllAccounts';
 import axios from 'axios';
 import CustomModal from '@/components/CustomModal';
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+const url = import.meta.env.VITE_NODE_ENV === "production" ? "api" : "api";
 
 const Main = () => {
   const theme = useTheme();
@@ -21,7 +21,7 @@ const Main = () => {
     setLoading(true); 
     try {
       const token = localStorage.getItem('token');
-      const response = await axios.get(`${API_URL}/wallet/balance-all`, {
+      const response = await axios.get(`${url}/wallet/balance-all`, {
           headers: {
             Authorization: `Bearer ${localStorage.getItem('token')}`,
           },

@@ -5,7 +5,7 @@ import GenericTable from '@/components/common/genericTable';
 import CustomModal from '@/components/CustomModal'; 
 import CustomButton from '@/components/CustomButton';
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+const url = import.meta.env.VITE_NODE_ENV === "production" ? "api" : "api";
 
 const FourthSection = () => {
   const [transactionData, setTransactionData] = useState([]);
@@ -16,7 +16,7 @@ const FourthSection = () => {
   // Function to fetch details of a specific transaction by ID
   const fetchTransactionDetails = async (transactionId: string) => {
     try {
-      const response = await axios.get(`${API_URL}/wallet/balance-log/${transactionId}`, {
+      const response = await axios.get(`${url}/wallet/balance-log/${transactionId}`, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem('token')}`,
         },
@@ -66,7 +66,7 @@ const FourthSection = () => {
     const fetchTransactionData = async () => {
       try {
         const token = localStorage.getItem('token');
-        const response = await axios.get(`${API_URL}/wallet/balance-log`, {
+        const response = await axios.get(`${url}/wallet/balance-log`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },

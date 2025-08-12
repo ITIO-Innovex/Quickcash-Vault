@@ -8,7 +8,7 @@ const ReferralCard = () => {
   const theme = useTheme();
   const [referralLink] = useState('https://quickcash.com/register?code=5jUKenhP');
   const toast = useAppToast(); // ✅ use toast hook
-
+  const url = import.meta.env.VITE_NODE_ENV === "production" ? "api" : "api";
   const handleCopyLink = () => {
     navigator.clipboard.writeText(referralLink);
     toast.success('Referral link copied!');
@@ -18,7 +18,7 @@ const ReferralCard = () => {
     const code = referralLink.split('=')[1]; 
 
     try {
-      const response = await axios.post(`${import.meta.env.VITE_API_URL || 'http://localhost:5000/api'}/referral/validate`, { code });
+      const response = await axios.post(`${url}/referral/validate`, { code });
       console.log('Validation response:', response);
       if (response.data.success) {
         toast.success('Validated! You can now use the code.');

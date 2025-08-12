@@ -11,7 +11,7 @@ import { useAppToast } from '@/utils/Toast';
   // Handle Account selection change
 import type { SelectChangeEvent } from '@mui/material/Select';
 
-const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
+const url = import.meta.env.VITE_NODE_ENV === "production" ? "api" : "api";
 
 const FirstSection = () => {
   const toast = useAppToast(); 
@@ -38,7 +38,7 @@ const FirstSection = () => {
           return;
         }
         // API endpoint as per backend route
-        const res = await api.get(`${API_URL}/blockchain/currencies/all`, {
+        const res = await api.get(`${url}/blockchain/currencies/all`, {
           headers: { Authorization: `Bearer ${token}` },
         });
         // If response has data, process it
@@ -71,7 +71,7 @@ const FirstSection = () => {
         return;
       }
 
-      const response = await api.get(`${API_URL}/wallet/all-accounts`, {
+      const response = await api.get(`${url}/wallet/all-accounts`, {
         headers: { Authorization: `Bearer ${token}` },
       });
 
@@ -160,7 +160,7 @@ const FirstSection = () => {
       return;
     }
 
-    const response = await api.get(`${API_URL}/wallet/address`, {
+    const response = await api.get(`${url}/wallet/address`, {
       params: {
         accountId: selectedAccount || formData.accountId,
         blockchain: formData.blockchain,
