@@ -1,7 +1,7 @@
 const express = require("express");
 const axios = require("axios");
 const { fetchVaultDetails } = require("../../Utils/fetchVaultDetails");
-const SubscriptionPlan = require('../../Models/Customer/subscriptionPlanModel');
+const SubscriptionPlan = require('../../Models/Customer/SubscriptionPlanModel');
 const { VAULT_HEADERS,VAULT_WALLET_URL,VAULT_BASE_URL  } = require("../../Config/VaultConfig");
 const Wallet = require('../../Models/Customer/WalletModel');
 

@@ -81,7 +81,7 @@ const PaymentDetails = ({ open, onClose, invoice }: any) => {
       // Show success toast message
       toast.success(response.data?.message || 'Invoice payment request sent successfully');
 
-      setActiveStep(2); // Proceed to next step
+      setActiveStep(3); // Proceed to next step
     } catch (error: any) {
       if (error.response) {
         const { status, message } = error.response.data || {};
@@ -210,7 +210,7 @@ const PaymentDetails = ({ open, onClose, invoice }: any) => {
         </Box>
       )}
 
-      {/* Step 3 - Confirm Payment */}
+      {/* Step 3 - Confirm Payment
        {activeStep === 2 && (
         <Box py={3} maxWidth={500} mx="auto">
           <Typography variant="h6" mb={2} fontWeight="bold" textAlign="center">
@@ -274,9 +274,9 @@ const PaymentDetails = ({ open, onClose, invoice }: any) => {
             </Box>
           </Box>
         </Box>
-      )}
+      )} */}
 
-      {/* Step 4 - Update Payment */}
+      {/* Step 4 - Confirm Payment */}
       {activeStep === 3 && (
         <Box py={3} maxWidth={500} mx="auto">
           <Typography variant="h6" mb={2} fontWeight="bold" textAlign="center">

@@ -1,11 +1,13 @@
 const axios = require("axios");
 const bcrypt = require("bcryptjs");
+const mongoose = require('mongoose');
 const jwt = require("jsonwebtoken");
 const { v4: uuidv4 } = require("uuid");
 const VaultUser = require("../../Models/Customer/authModel");
 const LoginSession = require("../../Models/LoginSessionModel");
 const SumsubKYC = require('../../Models/Customer/SumsubKycModel');
 const { fetchVaultDetails } = require("../../Utils/fetchVaultDetails");
+const SubscriptionPlan = require ("../../Models/Customer/SubscriptionPlanModel");
 const {  VAULT_HEADERS,VAULT_SIGNUP_URL,VAULT_CONFIRM_URL,VAULT_BASE_URL, VAULT_LOGIN_URL, VAULT_LOGOUT_URL,} = require("../../Config/VaultConfig");
 
 const generateOurToken = (userData) => {
@@ -607,5 +609,46 @@ module.exports = {
       error: error?.response?.data || error.message,
     });
   }
-},
+  },
+  fetchSubscriptionDetails: async (req,res) =>{
+    try{
+      const userId = req.user?._id;
+      console.log("User Id from fetch Subs route",userId);
+        if(!userId){
+          return res.status(401).json({
+            status:401,
+            message:"User Id Missing in request"
+          })
+        }
+
+      const userSubs = await SubscriptionPlan.find({ userId: new mongoose.Types.ObjectId(userId) });
+        console.log("UserSubs query result:", userSubs);
+
+        if (!userSubs || userSubs.length === 0) {
+          return res.status(404).json({
+            status: 404,
+            message: "No subscription plans found for user",
+          });
+        }
+        const description = userSubs.map(plan => plan.subscriptionDetails?.description || "No Description");
+
+        return res.status(200).json({
+          status:200,
+          message:"Subscription details found for user",
+          subscriptionDetails: userSubs.map(plan => ({
+            id: plan._id,
+            name: plan.subscriptionDetails?.name,
+            description: plan.subscriptionDetails?.description,
+            paymentStatus: plan.lastPaymentInvoiceStatus,
+            status: plan.status
+          }))
+        })
+    }catch (error){
+        console.error("Subscription API Error: ", error.message)
+        return res.status(500).json({
+          status:500,
+          message:"Server error fetching subscription details"
+        })
+    }
+  },
 };
