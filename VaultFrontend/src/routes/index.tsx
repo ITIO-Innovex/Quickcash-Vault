@@ -52,7 +52,7 @@ import BusinessRegister from '@/pages/User/BusinessRegister/main';
 import Settings from '@/pages/User/InvoiceDashboard/Settings/main'; 
 import AllSubscriptions from '@/pages/User/Subscriptions/Plans/main'; 
 import WalletRequest from '@/pages/Admin/Crypto/WalletRequests/main';
-import SignYourSelf from '@/pages/User/DigitalSignature/SignYourSelf';
+// import SignYourSelf from '@/pages/User/DigitalSignature/SignYourSelf';
 import MySubscriptions from '@/pages/User/Subscriptions/MyPlanss/main';
 import InvoiceDashboard from '@/pages/User/InvoiceDashboard/Dashboard';
 import CardRequests from '@/pages/User/cards/card-details/cardRequests';
@@ -60,7 +60,7 @@ import SendMoney from '@/pages/User/dashboardInsideForms/sendMoney/main';
 import TotalTransactions from '@/pages/Admin/Fiat/TotalTransactions/main';
 // import DigitalSignature from '../pages/User/DigitalSignature/index.jsx';
 import InvoiceQuotes from '@/pages/User/InvoiceDashboard/InvoiceQuote/main';
-import SignYourSelfForm from '@/pages/User/DigitalSignature/SignYourselfForm';
+// import SignYourSelfForm from '@/pages/User/DigitalSignature/SignYourselfForm';
 import InvoiceProduct from '@/pages/User/InvoiceDashboard/InvoiceProduct/main';
 // import Recipient from '@/pages/User/dashboardInsideForms/sendMoney/recipient';
 import InvoiceTemplate from '@/pages/User/InvoiceDashboard/InvoiceTemplate/main';
@@ -188,14 +188,14 @@ const AdminProtectedRoute = ({ children }: { children: JSX.Element }) => {
       { path: '/recurring-invoices', element: < RecurringInvoices /> },
       { path: '/invoice-transactions', element: <InvoiceTransactions /> },
       // { path: '/digital-signature', element: <DigitalSignature /> },
-      {
-        path: '/digital-signature/sign-yourself/:docId',
-        element: <SignYourSelf />,
-      },
-      {
-        path: '/digital-signature/sign-yourself-form',
-        element: <SignYourSelfForm />,
-      },
+      // {
+      //   path: '/digital-signature/sign-yourself/:docId',
+      //   element: <SignYourSelf />,
+      // },
+      // {
+      //   path: '/digital-signature/sign-yourself-form',
+      //   element: <SignYourSelfForm />,
+      // },
     ]
 
 // --- Admin Routes ---
