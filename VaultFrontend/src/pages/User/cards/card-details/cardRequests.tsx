@@ -12,9 +12,9 @@ import PageHeader from "@/components/common/pageHeader";
 import CommonTooltip from "@/components/common/toolTip";
 import GenericTable from "@/components/common/genericTable";
 import AttachMoneyIcon from '@mui/icons-material/AttachMoney';
+import  InvoicePayment from "../../../../modal/invoiePaymentModal";
 const url = import.meta.env.VITE_NODE_ENV === "production" ? "api" : "api";
 import { Box,CircularProgress, IconButton, Typography, useTheme } from "@mui/material";
-import SubscriptionInvoice from "../../Subscriptions/MyPlanss/SubscriptionInvoice";
 import CardOffers from "./availableCardOffers";
 
 const CardRequests = () => {
@@ -275,31 +275,12 @@ const CardRequests = () => {
   };
 
    const handlePayInvoice = async (row) => {
-  setLoading(true);
-  try {
-    const response = await api.get(`${url}/subscription/invoice`, {
-      headers: {
-        'Authorization': `Bearer ${localStorage.getItem('token')}`
-      }
-    });
-    const invoiceData = response.data.data;
-    console.log("📄 Invoice data:", invoiceData);
-    setInvoice(invoiceData); 
-    setOpen(true);
-
-    // ✅ Store recurrentInvoiceId in localStorage
-   const invoiceId = invoiceData.id;
-   if (invoiceId) {
-      localStorage.setItem("InvoiceId", invoiceId);
-    }
-    console.log("Invoice ID stored in localStorage:", invoiceId);
-
-  } catch (err) {
-    alert('Failed to fetch invoice');
-    console.error('Invoice fetch error:', err);
-  }
-  setLoading(false);
-};
+    setLoading(true);
+      console.log("Invoice Id passed",row.invoiceId);
+      setInvoice(row.invoiceId);
+      setOpen(true);
+    setLoading(false);
+    };
   const handleClose = () => setOpen(false);
 
   
@@ -449,7 +430,7 @@ const handleDeliveryChange = (e) => setDelivery(prev => ({
         </CustomModal>
         
         {/* Modal for Invoice Payment */}
-        <SubscriptionInvoice open={open} invoice={invoice} handleClose={handleClose} />
+        <InvoicePayment open={open} invoice={invoice} handleClose={handleClose} />
 
             </Box>
   );

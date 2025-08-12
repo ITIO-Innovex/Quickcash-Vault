@@ -3,14 +3,24 @@ import { jwtDecode } from 'jwt-decode';
 import { JwtPayload } from '@/types/jwt';
 import api from '@/helpers/apiHelper';
 
+interface SubscriptionPlanDetails {
+  id: string;
+  name: string;
+  description: string;
+  status: string;
+  paymentStatus?: string;
+}
+
 interface AuthContextType {
   token: string | null;
   user: JwtPayload['data'] | null;
   isAuthenticated: boolean;
+  subscriptionDetails: SubscriptionPlanDetails[] | null;
   loading: boolean;
   login: (token: string) => void;
   logout: () => void;
-  kycStatus: string | null; // Added kycStatus property
+  kycStatus: string | null; 
+  
   // NEW for admin
   adminToken: string | null;
   admin: JwtPayload['data'] | null;
@@ -26,13 +36,44 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [kycStatus, setKycStatus] = useState<string | null>(null); 
   const [user, setUser] = useState<JwtPayload['data'] | null>(null);
-  const [loading, setLoading] = useState(true); // NEW
-
+  const [subscriptionDetails, setSubscriptionDetails] = useState(null);
+  const [loading, setLoading] = useState(true); 
   // NEW admin states
   const [adminToken, setAdminToken] = useState<string | null>(null);
   const [admin, setAdmin] = useState<JwtPayload['data'] | null>(null);
   const [isAdminAuthenticated, setIsAdminAuthenticated] = useState(false);
   const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+
+  // to fetch user's subscription detais
+    useEffect(() => {
+    if (token) { 
+      api.get(`${API_URL}/customer/subscription-details`, {
+        headers: { Authorization: `Bearer ${token}` }
+      })
+       .then(res => {
+        // Subscription details response 
+        const allSubs = res.data.subscriptionDetails;
+
+        setSubscriptionDetails(allSubs);
+
+        if (allSubs && allSubs.length > 0) {
+          // Log each subscription plan description/status
+          allSubs.forEach(plan => {
+            console.log(`[Subscription] Name: ${plan.name} | Description: ${plan.description} | Status: ${plan.status} | Payment Status: ${plan.paymentStatus}`);
+          });
+        } else {
+          console.log("[Subscription] No active plans found for user.");
+        }
+      })
+        .catch(err => {
+        setSubscriptionDetails(null);
+        console.log("[Subscription] API Error or no subscription found:", err?.message);
+      });
+    } else {
+      setSubscriptionDetails(null);
+    }
+  }, [token]);
+
     // Function to fetch KYC status independently
   const fetchKycStatus = async () => {
     try {
@@ -129,6 +170,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         token,
         user,
         isAuthenticated,
+        subscriptionDetails,
         loading,
         login,
         kycStatus,

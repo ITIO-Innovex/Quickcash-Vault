@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 import CustomButton from "@/components/CustomButton";
 import { Card, CardContent,Typography,Grid, Chip,useTheme, CardActions, Slide, Box,} from "@mui/material";
 import CommonLoader from "@/components/CommonLoader";
+import { useAppToast } from "@/utils/Toast";
 
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
 
@@ -23,12 +24,14 @@ interface Plan {
 
 const PlansList = () => {
   const theme = useTheme();
+  const toast = useAppToast();
   const [loading, setLoading] = useState(true);
   const [plans, setPlans] = useState<Plan[]>([]);
   const navigate = useNavigate();
   const [subscribedPlanId, setSubscribedPlanId] = useState<string | null>(null);
   
   const fetchSubscriptions = async () => {
+    
     try {
       const token = localStorage.getItem("token");
       if (!token) {
@@ -49,6 +52,7 @@ const PlansList = () => {
   };
 
   const handleSubscribe = async (plan: Plan) => {
+    setLoading(true);
     try {
       const token = localStorage.getItem("token");
       if (!token) {
@@ -69,16 +73,23 @@ const PlansList = () => {
           },
         }
       );
+      toast.success("New Subscription has been started ");
       console.log("✅ Subscription started:", response.data);
       navigate("/my-plans");
+
       // const payUrl = response.data?.data?.payUrl;
       // if (payUrl) {
       //   window.location.href = payUrl;
       // }
       // }
-    } catch (error) {
-      console.error("❌ Subscription failed:", error?.response?.data || error.message);
+    } catch (err: any) {
+    // Error Handling: Log and show error toast
+    console.error('Error creating wallet:', err?.response?.data || err.message);
+    toast.error(err?.response?.data?.data?.status || 'Failed to create wallet!');
     }
+    finally {
+        setLoading(false);   // Loader OFF after response
+      }
   };
 
   useEffect(() => {
@@ -157,6 +168,7 @@ const PlansList = () => {
                  <CustomButton
                   fullWidth
                   onClick={() => handleSubscribe(plan)} // 🔥 important
+                  loading={loading}
                   sx={{
                     backgroundColor: "#483594",
                     "&:hover": {
@@ -164,7 +176,7 @@ const PlansList = () => {
                     },
                   }}
                 >
-                  Subscribe
+                  {loading ? 'Loading...' : 'Subscribe'}
                 </CustomButton>
                 </CardActions>
               </Card>

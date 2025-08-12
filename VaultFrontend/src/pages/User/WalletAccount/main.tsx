@@ -14,6 +14,7 @@ const Main = () => {
   // State to handle modal visibility and data
   const [openModal, setOpenModal] = useState(false);
   const [balanceData, setBalanceData] = useState(null);
+  const [amountData, setAmountData] = useState(null);
 
   // Handle button click to fetch balance
   const fetchBalance = async () => {
@@ -26,10 +27,11 @@ const Main = () => {
           },
         });
       console.log('API Response:', response.data);
+      console.log(response.data.data.total);
 
       // Set response data to the state
-      setBalanceData(response.data.data);  // Set the 'data' part of the response
-
+      setBalanceData(response.data.data);  
+      setAmountData(response.data.data.total);
       // Open modal to show balance data
       setOpenModal(true);
     } catch (error) {
@@ -47,17 +49,17 @@ const Main = () => {
 
   return (
     <Box className="dashboard-container" sx={{ backgroundColor: theme.palette.background.default }}>
-      <PageHeader  title="Wallet Accounts"  buttonText={loading ? "Loading..." : "Total Balance"}  loading={loading} onButtonClick={fetchBalance}  // Call the function on button click
-/>
+      <PageHeader  title="Wallet Accounts"  buttonText={loading ? "Loading..." : "Total Balance"}  loading={loading} onButtonClick={fetchBalance}/>
       <AllAccounts />
       
       {/* Custom Modal for displaying balance */}
-      <CustomModal
-        open={openModal}
-        onClose={handleCloseModal}
-        title="Wallet Balance Details"
-        disableBackdropClick={true}
-      >
+      <CustomModal open={openModal} onClose={handleCloseModal} title="Wallet Balance Details" disableBackdropClick={true} >
+        {/* ==== Show Total Amount at the top ==== */}
+      <Box sx={{ mb: 2 }}>
+        <Typography variant="h6" color="primary">
+          <strong>Total Balance:</strong> {amountData}
+        </Typography>
+      </Box>
         {/* Map over the balances array to display data */}
         {balanceData?.balances?.length > 0 ? (
           balanceData.balances.map((balance, index) => (
@@ -66,11 +68,12 @@ const Main = () => {
                 <strong>Account ID:</strong> {balance.account}
               </Typography>
               <Typography variant="body1">
-                <strong>Balance:</strong> {balance.balance} {balance.currency.toUpperCase()}
+                <strong>Crypto Balance:</strong> {balance.balance} {balance.currency.toUpperCase()}
               </Typography>
               <Typography variant="body2" color="textSecondary">
                 <strong>Last Updated:</strong> {new Date(balance.lastUpdated).toLocaleString()}
               </Typography>
+              
             </Box>
           ))
         ) : (

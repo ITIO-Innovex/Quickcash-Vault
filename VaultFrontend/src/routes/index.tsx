@@ -77,7 +77,7 @@ import SelectBeneficiary from '@/pages/User/dashboardInsideForms/sendMoney/selec
   import path from 'path';
 // --- Auth Route Wrapper ---
 const PrivateRoute = ({ children }: { children: JSX.Element }) => {
-  const { isAuthenticated, loading, kycStatus, logout } = useAuth();
+  const { isAuthenticated, loading, kycStatus,subscriptionDetails, logout } = useAuth();
 
       if (loading) return null; // wait for auth state to load before redirecting
 
