@@ -11,7 +11,7 @@ const AllAccounts = () => {
   const [loading, setLoading] = useState(true);
   const [accounts, setAccounts] = useState([]);
   const [error, setError] = useState<string | null>(null);
-  const [expanded, setExpanded] = useState<string | null>(null); // account id
+  const [expanded, setExpanded] = useState<string | null>(null); // Track the expanded account ID
   const [details, setDetails] = useState<{[id: string]: any}>({});
   const [detailsLoading, setDetailsLoading] = useState(false);
   const url = import.meta.env.VITE_NODE_ENV === "production" ? "api" : "api";
@@ -42,12 +42,12 @@ const AllAccounts = () => {
 
  const handleExpandClick = async (accountId: string) => {
   if (expanded === accountId) {
-    setExpanded(null);
-    setDetails(null);
+    setExpanded(null); // Collapse if clicked on the same account
+    setDetails(null); // Clear details
     return;
   }
 
-  setExpanded(accountId);
+  setExpanded(accountId); // Expand the clicked account
   setDetailsLoading(true);
 
   try {
@@ -87,10 +87,10 @@ const AllAccounts = () => {
       ) : (
         <Grid container spacing={3}>
           {accounts.map((acc: any) => (
-            <Grid item xs={12} sm={6} md={4} lg={3} key={acc.account}>
-              <Box className="account-cards" style={{ position: 'relative' }}>
-                <Typography variant="subtitle1">Account ID: {acc.account}</Typography>
-                <Typography variant="body2">Status: {acc.status}</Typography>
+            <Box className="root-cards" key={acc.account}>
+              <Box className="account-cards" >
+                <Typography className="card-name">Account ID: {acc.account}</Typography>
+                <Typography className="card-name">Status: {acc.status}</Typography>
                 <Tooltip title={expanded === acc.account ? 'Hide details' : 'View details'}>
                   <IconButton onClick={() => handleExpandClick(acc.account)} sx={{ position: 'absolute', bottom: 16, right: 16, color: 'white' }}>
                     {expanded === acc.account ? <ExpandLessIcon /> : <ExpandMoreIcon />}
@@ -102,8 +102,9 @@ const AllAccounts = () => {
                     <Box sx={{ textAlign: 'center' }}><CircularProgress size={24} /></Box>
                   ) : details[acc.account] ? (
                     <>
-                      <Typography variant="body2">Account Type: {details[acc.account].accountType}</Typography>
-                      <Typography variant="body2">Account Short Name: {details[acc.account].shortName || 'N/A'}</Typography>
+                      <Typography className="card-name">Account Type: {details[acc.account].accountType}</Typography>
+                      <Typography className="card-name">Account Short Name: {details[acc.account].shortName || 'N/A'}</Typography>
+                      <Typography className="card-name">Card Provider: {details[acc.account].cardProvider || 'N/A'}</Typography>
                     </>
                   ) : (
                     <Typography variant="body2" color="error">Failed to load details.</Typography>
@@ -112,7 +113,7 @@ const AllAccounts = () => {
               )}
 
               </Box>
-            </Grid>
+            </Box>
           ))}
         </Grid>
       )}

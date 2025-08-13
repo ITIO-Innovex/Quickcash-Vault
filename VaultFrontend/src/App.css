@@ -7732,13 +7732,22 @@ color: var(--bs-primary);
   background-color: #f0f0f0;
   color: #999;
 }
-/* Account Card styling
+ /* Account Card styling */
+.root-cards {
+  display: grid;
+  gap: 16px; /* Adjust the gap value as per your need */
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); /* Adjust the column layout */
+}
 .account-cards {
   position: relative;
+  width:300px;
   overflow: hidden;
+  gap:100px;
   background: linear-gradient(145deg, #483594, #2c2c2c);
   border-radius: 16px;
   margin-top: 2rem;
+   margin-right: 16px;  /* Add right margin for spacing between cards */
+  margin-bottom: 16px; 
   color: white;
   padding: 16px;
   cursor: pointer;
@@ -7746,65 +7755,31 @@ color: var(--bs-primary);
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
 }
 
-.account-cards:hover {
+ .account-cards:hover {
   transform: translateY(-4px);
 }
 
-.account-cards .shine {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: -75%;
-  height: 100%;
-  width: 50%;
-  background: linear-gradient(120deg, transparent, rgba(255, 255, 255, 0.2), transparent);
-  transform: skewX(-20deg);
-  animation: shine 2.5s infinite;
-}
-
-@keyframes shine {
-  0% {
-    left: -75%;
+@media (max-width: 600px) {
+  .root-cards {
+    grid-template-columns: 1fr; /* Stack the cards vertically on small screens */
   }
-  100% {
-    left: 125%;
+
+  .account-cards {
+    width: 210%; /* Take up full width */
+    margin-right: 0; /* No right margin */
   }
 }
 
-.account-type {
-  font-size: 1.1rem;
-  font-weight: bold;
-  margin-bottom: 4px;
-  letter-spacing: 0.5px;
+/* For medium screens (tablets) */
+@media (max-width: 768px) {
+  .root-cards {
+    grid-template-columns: repeat(2, 1fr); /* Two cards per row on medium screens */
+  }
+   .account-cards {
+    margin-left: 2rem; /* No right margin */
+  }
 }
 
-.account-id {
-  font-size: 0.9rem;
-  margin-bottom: 6px;
-  word-break: break-all;
-}
-
-.account-short {
-  font-size: 0.85rem;
-  margin-bottom: 8px;
-  color: #ccc;
-}
-
-.account-status {
-  font-size: 0.75rem;
-  font-weight: bold;
-  margin-top: 8px;
-}
-
-.account-status.active {
-  background-color: #28a745 !important;
-  color: white;
-}
-
-.account-status.inactive {
-  background-color: #dc3545 !important;
-  color: white;
-} */
  /* Confirmation Code Styling */
 .code-input-container {
   display: flex;

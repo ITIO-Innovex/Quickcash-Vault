@@ -100,4 +100,23 @@ module.exports = {
       });
     }
   },
+  getCurrencyInstruments : async (req, res) => {
+  try {
+    const response = await axios.get(`${VAULT_BASE_URL}/currency/instruments/`);
+    // Success response
+    res.status(200).json({
+      success: true,
+      data: response.data,
+      message: 'Currency instruments fetched successfully!'
+    });
+  } catch (error) {
+    // Error handling
+    res.status(error.response?.status || 500).json({
+      success: false,
+      data: null,
+      message: error.message || 'Failed to fetch currency instruments',
+      details: error.response?.data || null
+    });
+  }
+},
 };

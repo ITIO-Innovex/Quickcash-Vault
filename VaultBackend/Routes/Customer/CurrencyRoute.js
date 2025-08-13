@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const {verifyOurToken} = require("../../Middlewares/VerifyToken");
 const {checkVaultToken} = require("../../Middlewares/CheckVaultToken");
-const { getCurrencyList, getCurrencyBySlug, getCurrencyShortList, getCurrencyByName} = require('../../Controller/Customer/CurrencyController');
+const { getCurrencyList, getCurrencyBySlug, getCurrencyShortList, getCurrencyByName,  getCurrencyInstruments} = require('../../Controller/Customer/CurrencyController');
 
 // Route for getting the list of currencies
 router.get('/all', verifyOurToken ,checkVaultToken ,getCurrencyList);
@@ -12,5 +12,7 @@ router.post('/slug', verifyOurToken, checkVaultToken ,getCurrencyBySlug);
 router.get('/short', verifyOurToken, checkVaultToken, getCurrencyShortList);
 // Route for getting the currency by name
 router.get('/name', verifyOurToken, checkVaultToken, getCurrencyByName);
+// Route to get all instruments list
+router.get('/instruments-all', verifyOurToken, checkVaultToken,  getCurrencyInstruments);
 
 module.exports = router;

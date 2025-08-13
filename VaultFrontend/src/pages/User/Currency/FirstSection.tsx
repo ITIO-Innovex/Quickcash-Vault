@@ -26,7 +26,7 @@ const CurrencyDataPage = () => {
 
         console.log('API Response:', response.data);
          response.data.data.forEach((item, index) => {
-        console.log(`Transfer Fee for ${item.description} (Slug: ${item.slug}):`, item.settings?.transferFee);
+        // console.log(`Transfer Fee for ${item.description} (Slug: ${item.slug}):`, item.settings?.transferFee);
       });
         setCurrencyData(response.data.data || []);
       } catch (error) {
@@ -85,12 +85,38 @@ const CurrencyDataPage = () => {
     );
   };
 
+    // Custom popover for features
+const FeaturePopover: React.FC<{ data: string[] }> = ({ data }) => {
+  const [open, setOpen] = useState(false);
+  return (
+    <>
+      <button className="popover-btn" onClick={e => { e.stopPropagation(); setOpen(true); }} style={{ cursor: 'pointer', color: '#1976d2', background: 'none', border: 'none', textDecoration: 'underline' }}>
+        Features
+      </button>
+      {open && (
+        <div className="popover-modal" style={{ position: 'absolute', zIndex: 9999, background: '#fff', color: '#222', border: '1px solid #eee', borderRadius: 8, padding: 16, minWidth: 220 }}>
+          <button style={{ float: 'right', background: 'none', border: 'none', fontWeight: 'bold', cursor: 'pointer' }} onClick={() => setOpen(false)}>×</button>
+          <Typography variant="h6" mt={2} mb={1}>Features:</Typography>
+          <ul>
+            {data?.map((feature: string, index: number) => (
+              <li key={index}>{feature}</li>
+            ))}
+          </ul>
+        </div> 
+      )}
+    </>
+  );
+};
+
+
+
   const columns = [
     { field: 'description', headerName: 'Description' },
     { field: 'id', headerName: 'ID' },
     { field: 'iconUrl', headerName: 'Icon', render: row => <img src={row.iconUrl} alt="icon" style={{ width: 32, height: 32, borderRadius: 6 }} /> },
     { field: 'settings', headerName: 'Settings', render: row => <SettingsPopover data={row.settings} /> },
     { field: 'transferFee', headerName: 'Transfer', render: row => <TransferPopover data={row.settings?.transferFee} /> },
+    { field: 'features', headerName: 'Feature', render: row => <FeaturePopover data={row.settings?.features} /> },
     { field: 'shortName', headerName: 'Short Name' },
     { field: 'slug', headerName: 'Slug' },
     { field: 'type', headerName: 'Type' },
