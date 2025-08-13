@@ -7917,6 +7917,7 @@ color: var(--bs-primary);
     padding: 20px;
   }
 }
+/* cards styling  */
 .slider-outer {
   width: 90%;
   margin: 40px auto;
@@ -7950,128 +7951,108 @@ color: var(--bs-primary);
 }
 
 .card-visual {
-  width: 100%;
+  width: 400px;
+  height: 200px;
   border-radius: 22px;
-  padding: 26px 24px 22px 24px;
+  padding: 20px 12px 12px 24px;
   box-shadow: 0 8px 32px 0 rgba(58,18,70,0.14);
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
   align-items: flex-start;
   margin: 0 16px;
+  transition: transform 0.7s cubic-bezier(.4,0,.2,1);
+  transform-style: preserve-3d;
   position: relative;
-  background: #845ec2;
-  transition: background 0.4s;
+  overflow: hidden;
+}
+.card-visual-wrapper {
+  perspective: 1000px;
+  cursor: pointer;
+  display: inline-block;
 }
 
+/* Flipped effect */
+.card-visual.flipped {
+  transform: rotateY(180deg);
+}
+
+.card-visual .card-back {
+  transform: rotateY(180deg);
+  color: #eee;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.card-details {
+  margin-top: 1rem;
+  width: 100%;
+}
 .card-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
   width: 100%;
-  margin-bottom: 12px;
 }
 
-.card-avatar {
-  background: #fff;
-  color: #444;
-  width: 36px;
-  height: 36px;
-  border-radius: 50%;
+.card-type {
+  color: #fff;
   font-weight: 700;
-  text-align: center;
   line-height: 36px;
-  font-size: 1.28rem;
-  box-shadow: 0px 2px 5px rgba(80,80,100,0.07);
+  font-size: 1.2rem;
   letter-spacing: 2px;
 }
 
 .card-flag {
   border-radius: 2px;
-  box-shadow: 0 1px 4px rgba(100,50,120,0.10);
+  box-shadow: 0 1px 4px rgba(100, 50, 120, 0.10);
   width: 30px;
   height: 24px;
   object-fit: cover;
+  float: right;
+  align-self: flex-end;
+  margin-right: 20px;
 }
 
-.card-number {
-  margin-top: 18px;
-  font-size: 1.32rem;
-  letter-spacing: 2.4px;
-  font-family: 'Fira Mono', 'Consolas', monospace;
-  color: #fff;
-  font-weight: bold;
-  word-spacing: 4px;
-}
-
-.card-name {
-  margin-top: 16px;
-  font-size: 1.09rem;
-  font-weight: 500;
-  letter-spacing: 1px;
+.card-numbers {
+  font-family: monospace;
+  font-size: 1.4rem;
   color: #e1e1fa;
 }
 
-.card-row {
-  margin-top: 26px;
-  display: flex;
-  justify-content: space-between;
-  width: 100%;
-  font-size: 1.03rem;
-  opacity: 0.93;
-  color: #d1d8fc;
+.card-name {
+  font-size: 1rem;
+  font-weight: 500;
+  margin-bottom: 0.5rem;
+  color: #e1e1fa;
 }
 
-.slider-dots {
+.card-back {
+  width: 100%;
+  margin: 0 auto;
+  height: 400px;
   display: flex;
   justify-content: center;
-  gap: 9px;
-  margin-top: 12px;
-}
-.slider-dot {
-  width: 12px;
-  height: 12px;
-  border-radius: 50%;
-  background: #c5c5d8;
-  transition: background .18s;
-}
-.slider-dot.active {
-  background: #845ec2;
+  align-items: center;
 }
 
-/* Responsive styles */
-@media (max-width: 600px) {
-  .slider-outer {
-    max-width: 98vw;
-    margin: 14px auto;
-    padding: 0 2px;
-  }
-  .card-visual {
-    max-width: 98vw;
-    min-width: unset;
-    padding: 12px 7px 10px 10px;
-  }
-  .card-header {
-    margin-bottom: 6px;
-  }
-  .card-avatar {
-    width: 27px;
-    height: 27px;
-    font-size: .9rem;
-    line-height: 28px;
-  }
-  .card-number {
-    margin-top: 11px;
-    font-size: 1.01rem;
-  }
-  .card-name {
-    font-size: .98rem;
-    margin-top: 8px;
-  }
-  .card-row {
-    margin-top: 13px;
-    font-size: .9rem;
-  }
+.card-back .card-name {
+  font-size: 1.1rem;
+  color: #fff;
+}
+
+.card-back .card-name span {
+  font-weight: bold;
+}
+
+.card-visual.flipped {
+  transform: rotateY(180deg);
+}
+
+.card-back .card-flag {
+  display: none;
 }
 
 /* card root design */
@@ -8089,23 +8070,6 @@ color: var(--bs-primary);
   margin-bottom: 16px;
 }
 
-/* Responsive design */
-@media (max-width: 900px) {
-  .cards-grid-item {
-    margin-bottom: 18px;
-  }
-  .cards-paper {
-    min-height: 250px;
-    padding: 16px;
-  }
-}
-
-@media (max-width: 600px) {
-  .cards-paper {
-    min-height: 160px;
-    padding: 12px;
-  }
-}
 /* card offers */
 .tab-root {
   width: 100%;

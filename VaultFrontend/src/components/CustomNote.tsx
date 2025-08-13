@@ -3,7 +3,7 @@ import { useTheme } from '@mui/material';
 
 type CustomNoteProps = {
   note?: boolean;
-  children: React.ReactNode; // Jo text dikhana hai wo yahan pass karo
+  children: React.ReactNode; 
 };
 
 const CustomNoteBox: React.FC<CustomNoteProps> = ({ note = true, children }) => {
