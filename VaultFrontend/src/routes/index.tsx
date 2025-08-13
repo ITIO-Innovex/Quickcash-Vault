@@ -39,6 +39,7 @@ import CoinList from '@/pages/Admin/Crypto/CoinsList/main';
 import Notification from '@/pages/Admin/Notification/main';
 import SummaryTokens from '@/pages/User/SummaryTokens/main'; 
 import ExchangePairs from '@/pages/User/ExchangePairs/main'; 
+import InstrumentPairs from '@/pages/User/Instruments/main'; 
 import CryptoDashboard from '@/pages/User/Crypto/Dashboard';
 import ForgotPasswordPage from '@/pages/User/ForgotPassord';
 import BusinessKyc from '@/pages/Admin/KYC/BusinessKyc/main';
@@ -173,6 +174,7 @@ const AdminProtectedRoute = ({ children }: { children: JSX.Element }) => {
       { path: '/invoice-quotes', element: <InvoiceQuotes /> },
       { path: '/summary-tokens', element: <SummaryTokens /> },
       { path: '/exchange-pairs', element: <ExchangePairs /> },
+      { path: '/instrument-pairs', element: <InstrumentPairs /> },
       { path: '/manual-payment', element: <ManualPayment /> },
       { path: '/beneficiary', element: <SelectBeneficiary /> },
       { path: '/wallet-accounts', element: <WalletAccounts /> },

@@ -82,12 +82,17 @@ const Sidebar = ({ isOpen, toggleSidebar }: SidebarProps) => {
        hasDropdown: true,
       subItems: [
         { name: 'Currency List', path: '/currency' },
+        { name: 'Exchange Pair List', path: '/exchange-pairs' },
+        { name: 'Instrument Pair List', path: '/instrument-pairs' },
+      ]  },
+      { name: 'Token', icon:  <SupportAgentIcon />,
+       hasDropdown: true,
+      subItems: [
         { name: 'Tokens List', path: '/tokens' },
         { name: 'Summary Tokens List', path: '/summary-tokens' },
-        { name: 'Exchange Pair List', path: '/exchange-pairs' },
       ]  },
-    { name: 'Business', icon: <ApartmentIcon />, path: '/register-business' },
-    { name: 'Tickets', icon: <SupportAgentIcon />, path: '/help-center' },
+    // { name: 'Business', icon: <ApartmentIcon />, path: '/register-business' },
+    // { name: 'Tickets', icon: <SupportAgentIcon />, path: '/help-center' },
     { name: 'Refer & Earn', icon: <Diversity3Icon />, path: '/refer-earn' },
     {
       name: 'Invoices',
@@ -117,9 +122,7 @@ const Sidebar = ({ isOpen, toggleSidebar }: SidebarProps) => {
   return (
     <Box
       className={`user-sidebar ${isOpen ? 'open' : 'closed'}`}
-      sx={{
-        backgroundColor: theme.palette.background.default,
-        color: theme.palette.text.primary,
+      sx={{ backgroundColor: theme.palette.background.default, color: theme.palette.text.primary,
         boxShadow: theme.shadows[2],
         width: isOpen ? 200 : 60,
         overflow: 'visible',
