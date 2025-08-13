@@ -10,6 +10,7 @@ const InvoicePayment = ({ open, invoice, handleClose }: any) => {
   const [loading, setLoading] = useState(false);
   const [walletModalOpen, setWalletModalOpen] = useState(false);
   const [invoiceDetails, setInvoiceDetails] = useState<any>(null);
+
 // When modal opens & invoice id is there, fetch details
   useEffect(() => {
     if (open && invoice) {
@@ -34,6 +35,7 @@ const InvoicePayment = ({ open, invoice, handleClose }: any) => {
       const response = await api.get(`${url}/subscription/invoice/${invoiceId}`);
       const data = response.data;
       console.log("API Response for Invoice ID:", invoiceId, data); 
+      localStorage.setItem("InvoiceId",invoiceId);
       // You may also want to do: return data.data if API wraps response in {data: ...}
       return data;
     } catch (error) {
@@ -53,38 +55,37 @@ const InvoicePayment = ({ open, invoice, handleClose }: any) => {
 
   return (
     <CustomModal open={open} onClose={handleClose}  disableBackdropClick={true} title=" Invoice Payment Details" sx={{ backgroundColor: 'background.default' }}>
-      {invoice && (
+       {loading ? (
+    <Typography align="center">Loading invoice details...</Typography>
+  ) : invoiceDetails ? (
         <Box sx={{ borderRadius: 2 }}>
           <Typography variant="h6" mb={2} fontWeight="bold">
             Invoice ID : {invoice}
           </Typography>
           <Grid container spacing={2}>
             <Grid item xs={12} sm={6}>
-              {detailItem('Status', invoiceDetails.status)}
+              {detailItem('Status', invoiceDetails.data?.status)}
             </Grid>
             <Grid item xs={12} sm={6}>
-              {detailItem('Amount', `$${invoice.amount}`)}
+              {detailItem('Amount', `${invoiceDetails.data?.amount}`)}
             </Grid>
             <Grid item xs={12} sm={6}>
-              {detailItem('Currency', invoice.currency)}
+              {detailItem('Currency', invoiceDetails.data?.currency)}
             </Grid>
             <Grid item xs={12} sm={6}>
-              {detailItem('Type', invoice.type)}
+              {detailItem('Type', invoiceDetails.data?.type)}
+            </Grid>
+             <Grid item xs={12} sm={6}>
+              {detailItem('Invoice ID', invoiceDetails.data?.id)}
             </Grid>
             <Grid item xs={12} sm={6}>
-              {detailItem('Alignable', invoice.alignable ? 'Yes' : 'No')}
+              {detailItem('External Client ID', invoiceDetails.data?.externalClientId)}
             </Grid>
             <Grid item xs={12} sm={6}>
-              {detailItem('Recurrent Invoice ID', invoice.recurrentInvoiceId)}
+              {detailItem('Alignable', invoiceDetails.data?.alignable ? 'Yes' : 'No')}
             </Grid>
             <Grid item xs={12} sm={6}>
-              {detailItem('External Client ID', invoice.externalClientId)}
-            </Grid>
-            <Grid item xs={12} sm={6}>
-              {detailItem('Invoice ID', invoice.id)}
-            </Grid>
-            <Grid item xs={12} sm={6}>
-              {detailItem('Last Modified', new Date(invoice.lastModifiedDate).toLocaleString())}
+              {detailItem('Last Modified', new Date(invoiceDetails.data?.lastModifiedDate).toLocaleString())}
             </Grid>
           </Grid>
           <Box mt={4} textAlign="right">
@@ -95,9 +96,11 @@ const InvoicePayment = ({ open, invoice, handleClose }: any) => {
           </CustomButton>
 
           </Box>
-          <WalletModal open={walletModalOpen} onClose={() => setWalletModalOpen(false)} />
+          <WalletModal open={walletModalOpen}  invoice={invoiceDetails?.data?.id || invoice} onClose={() => setWalletModalOpen(false)} />
         </Box>
-      )}
+        ) : (
+    <Typography align="center">No invoice data available!</Typography>
+  )}
     </CustomModal>
     
   );

@@ -8,14 +8,14 @@ const Main = () => {
   const theme = useTheme();
   const [originalData, setOriginalData] = useState([]);
   const [loading, setLoading] = useState(false);
-  const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+  const url = import.meta.env.VITE_NODE_ENV === "production" ? "api" : "api";
 
   useEffect(() => {
     const fetchInvoices = async () => {
       setLoading(true);
       try {
         const token = localStorage.getItem('token');
-        const res = await axios.get(`${API_URL}/subscription/invoices`, {
+        const res = await axios.get(`${url}/subscription/invoices`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },

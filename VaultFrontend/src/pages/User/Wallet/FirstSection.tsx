@@ -7,7 +7,7 @@ import CommonTooltip from '@/components/common/toolTip';
 import { CheckCircle, Lock, AccountBalanceWallet, ContentCopy, Done, VerifiedUser } from '@mui/icons-material';
 import { Box, Card, CardContent, Typography, Grid, useTheme, IconButton } from '@mui/material';
 
-const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
+const url = import.meta.env.VITE_NODE_ENV === "production" ? "api" : "api";
 
 const FirstSection = () => {
   const theme = useTheme();
@@ -27,7 +27,7 @@ const FirstSection = () => {
         console.warn('Token not found in localStorage');
         return;
       }
-      const response = await api.get(`${API_URL}/wallet/all-wallets`, {
+      const response = await api.get(`${url}/wallet/all-wallets`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       if (response.status === 200) {
@@ -58,7 +58,7 @@ const FirstSection = () => {
         toast.error('Token not found');
         return;
       }
-      const response = await api.get(`${API_URL}/wallet/validate`, {
+      const response = await api.get(`${url}/wallet/validate`, {
         headers: { Authorization: `Bearer ${token}` },
         params: {
           address: wallet.address,

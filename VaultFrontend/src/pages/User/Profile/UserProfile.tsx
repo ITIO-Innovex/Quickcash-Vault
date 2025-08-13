@@ -29,13 +29,13 @@ const UserProfile = () => {
   const [activeTab, setActiveTab] = useState('User Information');
   const [activeSubTab, setActiveSubTab] = useState('User Scopes');
   const [userData, setUserData] = useState<VaultUser | null>(null);
-  const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+  const url = import.meta.env.VITE_NODE_ENV === "production" ? "api" : "api";
 
   useEffect(() => {
     const fetchUserData = async () => {
       try {
         const token = localStorage.getItem('token');
-        const res = await fetch(`${API_URL}/customer/vault/user-info`, {
+        const res = await fetch(`${url}/customer/vault/user-info`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },

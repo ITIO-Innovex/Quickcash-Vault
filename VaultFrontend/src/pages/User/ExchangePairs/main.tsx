@@ -6,7 +6,7 @@ import PageHeader from '@/components/common/pageHeader';
 import FirstSection from './FirstSection';
 import CustomModal from '@/components/CustomModal';
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+const url = import.meta.env.VITE_NODE_ENV === "production" ? "api" : "api";
 
 const Main = () => {
   const theme = useTheme();
@@ -42,7 +42,7 @@ const Main = () => {
         console.error('Token not found in localStorage');
         return;
       }
-      const response = await axios.get(`${API_URL}/blockchain/rates`, {
+      const response = await axios.get(`${url}/blockchain/rates`, {
         params: { fromCurrency, toCurrency, amount },
         headers: {
           Authorization: `Bearer ${token}`,

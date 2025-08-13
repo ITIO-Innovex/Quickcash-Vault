@@ -25,6 +25,7 @@ const FiatCrypto = () => {
   const theme = useTheme();
   const toast = useAppToast();
   const [ibanError, setIbanError] = useState(null);
+  const [loading, setLoading] = useState(false);
   const [wallets, setWallets] = useState([]);
   const [loadingWallets, setLoadingWallets] = useState(false);
   const [isWithdrawModalOpen, setIsWithdrawModalOpen] = useState(false);
@@ -138,6 +139,7 @@ const FiatCrypto = () => {
 
     const handleIbanCreate = async (e) => {
     e.preventDefault();
+    setLoading(true);       
     try {
         const token = localStorage.getItem("token");
         if (!token) {
@@ -161,6 +163,8 @@ const FiatCrypto = () => {
         }
         toast.error(errorMsg);
         console.error("IBAN create error:", err);
+    } finally{
+      setLoading(false);
     }
     };
 
@@ -175,6 +179,7 @@ const FiatCrypto = () => {
 
     const handlePayinSubmit = async (e) => {
     e.preventDefault();
+    setLoading(true);
     try {
         const token = localStorage.getItem("token");
         if (!token) {
@@ -206,6 +211,8 @@ const FiatCrypto = () => {
     }
     toast.error(errorMsg);
     console.error("Payin API error:", err);
+  }  finally{
+    setLoading(false);
   }
     };
 
@@ -222,47 +229,50 @@ const FiatCrypto = () => {
     const handleWithdrawClose = () => setIsWithdrawModalOpen(false);
 
    const handleWithdrawSubmit = async (e) => {
-  e.preventDefault();
-  try {
-    const token = localStorage.getItem("token");
-    if (!token) {
-      toast.error("No token found in localStorage");
-      return;
-    }
-
-    // API POST call
-    const res = await api.post(
-      `${url}/operation/withdraw`,
-      {
-        type: withdrawType, // BANK_TRANSFER
-        currency: withdrawCurrency,
-        amount: withdrawAmount,
-        fromAccount: withdrawFromAccount,
-        iban: withdrawIban,
-        bicOrSwiftCode: withdrawBic,
-      },
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+    e.preventDefault();
+    setLoading(true);
+    try {
+      const token = localStorage.getItem("token");
+      if (!token) {
+        toast.error("No token found in localStorage");
+        return;
       }
-    );
 
-    toast.success("Withdrawal successful!");
-    setIsWithdrawModalOpen(false);
-    // Optionally: reset fields, refresh wallet, etc.
-    console.log("Withdraw API response:", res.data);
-  } catch (err) {
-    let errorMsg = "Something went wrong!";
-    if (err.response?.data?.errors && err.response.data.errors.length > 0) {
-      errorMsg = err.response.data.errors[0].description;
-    } else if (err.response?.data?.message) {
-      errorMsg = err.response.data.message;
+      // API POST call
+      const res = await api.post(
+        `${url}/operation/withdraw`,
+        {
+          type: withdrawType, // BANK_TRANSFER
+          currency: withdrawCurrency,
+          amount: withdrawAmount,
+          fromAccount: withdrawFromAccount,
+          iban: withdrawIban,
+          bicOrSwiftCode: withdrawBic,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      toast.success("Withdrawal successful!");
+      setIsWithdrawModalOpen(false);
+      // Optionally: reset fields, refresh wallet, etc.
+      console.log("Withdraw API response:", res.data);
+    } catch (err) {
+      let errorMsg = "Something went wrong!";
+      if (err.response?.data?.errors && err.response.data.errors.length > 0) {
+        errorMsg = err.response.data.errors[0].description;
+      } else if (err.response?.data?.message) {
+        errorMsg = err.response.data.message;
+      }
+      toast.error(errorMsg);
+      console.error("Withdraw API error:", err);
+    } finally{
+      setLoading(false);
     }
-    toast.error(errorMsg);
-    console.error("Withdraw API error:", err);
-  }
-};
+  };
 
   return (
     <>
@@ -462,20 +472,17 @@ const FiatCrypto = () => {
       {/* Create Iban Modal */}
       <CustomModal open={isIbanModalOpen} onClose={handleIbanModalClose} title="Create IBAN Issuance Request">
         <form onSubmit={handleIbanCreate} className="activate-form">
-            <CustomInput
-                type="text"
-                value={ibanCurrency}
-                disabled
-                label="currency"
-            />
+            <CustomInput type="text" value={ibanCurrency} disabled label="currency" />
+
             <Box display="flex" justifyContent="flex-end" mt={2}>
-            <CustomButton className="form-submit-btn" type="submit" style={{ marginTop: 16 }}>
+            <CustomButton  loading={loading} className="form-submit-btn" type="submit" style={{ marginTop: 16 }}>
             Create
             </CustomButton>
             </Box>
         </form>
       </CustomModal>
 
+     {/*   Create payin*/}
       <CustomModal open={isPayinModalOpen} onClose={handlePayinClose} title="Payin" >
         <form onSubmit={handlePayinSubmit} className="activate-form">
 
@@ -487,10 +494,13 @@ const FiatCrypto = () => {
             
             <CustomInput type="text" value={payinFromAccount} onChange={e => setPayinFromAccount(e.target.value)} label="From Account" required />
             
-            <CustomButton className="form-submit-btn" type="submit" style={{marginTop:18}}> Create Payin </CustomButton>
+            <Box display="flex" justifyContent="flex-end" mt={2}>
+            <CustomButton  loading={loading} className="form-submit-btn" type="submit" style={{marginTop:18}}> Create Payin </CustomButton>
+            </Box>
         </form>
       </CustomModal>
 
+      {/* Create withdraw */}
       <CustomModal open={isWithdrawModalOpen} onClose={handleWithdrawClose} title="Withdraw Funds" >
         <form onSubmit={handleWithdrawSubmit} className="activate-form">
 
@@ -510,14 +520,17 @@ const FiatCrypto = () => {
 
           <CustomInput type="text" value={withdrawBic} onChange={e => setWithdrawBic(e.target.value)} label="BIC/Swift Code"  />
 
-          <CustomButton className="form-submit-btn" type="submit" style={{ marginTop: 18 }}>
+          <Box display="flex" justifyContent="flex-end" mt={2}>
+          <CustomButton loading={loading} className="form-submit-btn" type="submit" style={{ marginTop: 18 }}>
             Withdraw
           </CustomButton>
+          </Box>
         </form>
       </CustomModal>
       
        {/* Direct Exchange Modal Call */}
       <DirectExchangeModal open={isDirectExchangeOpen} onClose={handleExchangeClose} />
+      
        {/*Crypto withdrawal Modal Call */}
       <CryptoWithdrawModal open={isCryptoModalOpen} onClose={handleClose} />
 

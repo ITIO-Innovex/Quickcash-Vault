@@ -42,12 +42,12 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [adminToken, setAdminToken] = useState<string | null>(null);
   const [admin, setAdmin] = useState<JwtPayload['data'] | null>(null);
   const [isAdminAuthenticated, setIsAdminAuthenticated] = useState(false);
-  const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+   const url = import.meta.env.VITE_NODE_ENV === "production" ? "api" : "api";
 
   // to fetch user's subscription detais
     useEffect(() => {
     if (token) { 
-      api.get(`${API_URL}/customer/subscription-details`, {
+      api.get(`${url}/customer/subscription-details`, {
         headers: { Authorization: `Bearer ${token}` }
       })
        .then(res => {
@@ -77,7 +77,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     // Function to fetch KYC status independently
   const fetchKycStatus = async () => {
     try {
-      const res = await api.get(`${API_URL}/customer/kyc-status`, {
+      const res = await api.get(`${url}/customer/kyc-status`, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem('token')}`,
         },

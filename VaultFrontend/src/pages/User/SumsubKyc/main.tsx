@@ -3,7 +3,7 @@ import snsWebSdk from "@sumsub/websdk";
 import { useTheme } from "@mui/material";
 import React, { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+const url = import.meta.env.VITE_NODE_ENV === "production" ? "api" : "api";
 
 
 const SumsubKYC = () => {
@@ -16,7 +16,7 @@ const SumsubKYC = () => {
 
   const fetchAccessToken = async () => {
     try {
-      const response = await axios.get(`${API_URL}/kyc/sumsub/token`, {
+      const response = await axios.get(`${url}/kyc/sumsub/token`, {
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('token')}`
         }
@@ -34,7 +34,7 @@ const SumsubKYC = () => {
     try {
       console.log("KYC Status Payload Sent to Backend:", payload);
       const response = await axios.post(
-        `${API_URL}/kyc/kyc-status`,
+        `${url}/kyc/kyc-status`,
         payload,
         { 
           headers: {

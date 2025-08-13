@@ -4,7 +4,7 @@ import { useTheme } from '@mui/material/styles';
 import { Box, Typography, TextField } from '@mui/material';
 import CustomButton from '../../../components/CustomButton';
 import CustomPassword from '@/components/CustomPasswordField';
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+const url = import.meta.env.VITE_NODE_ENV === "production" ? "api" : "api";
 
 const SecurityForm = () => {
   const theme = useTheme();
@@ -22,7 +22,7 @@ const SecurityForm = () => {
     const token = localStorage.getItem('token'); 
 
     const response = await axios.post(
-      `${API_URL}/customer/password/change`,
+      `${url}/customer/password/change`,
       {
         oldPassword,
         newPassword,
@@ -65,7 +65,7 @@ const handleDigitChange = (value: string, index: number) => {
     const token = localStorage.getItem('token'); 
 
     const response = await axios.post(
-      `${API_URL}/customer/password/change/confirm`,
+      `${url}/customer/password/change/confirm`,
       {
         oldPassword,
         newPassword,

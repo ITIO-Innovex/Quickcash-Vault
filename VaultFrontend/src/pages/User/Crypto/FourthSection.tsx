@@ -4,8 +4,9 @@ import { Box, Divider, Typography } from '@mui/material';
 import GenericTable from '@/components/common/genericTable';
 import CustomModal from '@/components/CustomModal'; 
 import CustomButton from '@/components/CustomButton';
+import api from '@/helpers/apiHelper';
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+const url = import.meta.env.VITE_NODE_ENV === "production" ? "api" : "api";
 
 const FourthSection = () => {
   const [transactionData, setTransactionData] = useState([]);
@@ -16,7 +17,7 @@ const FourthSection = () => {
   // Function to fetch details of a specific transaction by ID
   const fetchTransactionDetails = async (transactionId: string) => {
     try {
-      const response = await axios.get(`${API_URL}/wallet/balance-log/${transactionId}`, {
+      const response = await axios.get(`${url}/wallet/balance-log/${transactionId}`, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem('token')}`,
         },
@@ -63,46 +64,52 @@ const FourthSection = () => {
   ];
 
   useEffect(() => {
-    const fetchTransactionData = async () => {
-      try {
-        const token = localStorage.getItem('token');
-        const response = await axios.get(`${API_URL}/wallet/balance-log`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
+   const fetchTransactionData = async () => {
+  try {
+    const token = localStorage.getItem('token');
+    const response = await api.get(`${url}/wallet/balance-log`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
 
-        console.log('API Response:', response.data);
+    console.log('Crypto API Response:', response.data);
 
-        // Mapping the response data to match the table format
-        if (response.data && response.data.data) {
-          const mappedData = response.data.data.map((item: any) => ({
-            timestamp: new Date(item.timestamp).toLocaleString(),
-            operationType: item.operationType,
-            id: item.id,
-            amount: item.cryptoDepositModel.amount,
-            blockchain: item.cryptoDepositModel.blockchain,
-            currency: item.cryptoDepositModel.currency.toUpperCase(),
-            status: item.status,
-          }));
+    // Mapping the response data to match the table format
+    if (response.data && response.data.data) {
+      const mappedData = response.data.data.map((item: any) => {
+        const amount = item.cryptoDepositModel ? item.cryptoDepositModel.amount : item.subscriptionFeeTransferModel?.amount;
+        const blockchain = item.cryptoDepositModel ? item.cryptoDepositModel.blockchain : '';
+        const currency = item.cryptoDepositModel ? item.cryptoDepositModel.currency.toUpperCase() : '';
+        
+        return {
+          timestamp: new Date(item.timestamp).toLocaleString(),
+          operationType: item.operationType,
+          id: item.id,
+          amount: amount,
+          blockchain: blockchain,
+          currency: currency,
+          status: item.status,
+        };
+      });
 
-          setTransactionData(mappedData);
-        } else {
-          console.error('No data found in response');
-        }
-      } catch (error) {
-        console.error('Error fetching data:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
+      setTransactionData(mappedData);
+    } else {
+      console.error('No data found in response');
+    }
+  } catch (error) {
+    console.error('Error fetching data:', error);
+  } finally {
+    setLoading(false);
+  }
+};
 
     fetchTransactionData();
   }, []);
 
   const handleModalClose = () => {
-    setModalOpen(false);
-    setSelectedTransaction(null);
+  setModalOpen(false);
+  setSelectedTransaction(null);
   };
 
   if (loading) {
@@ -116,12 +123,7 @@ const FourthSection = () => {
         <GenericTable columns={transactionColumns} data={transactionData} />
       </Box>
       {/* Custom Modal to display the transaction details */}
-      <CustomModal 
-        title="Transaction Details" 
-        open={modalOpen} 
-        onClose={handleModalClose} 
-        disableBackdropClick={true}
-      >
+      <CustomModal  title="Transaction Details"  open={modalOpen}  onClose={handleModalClose}  disableBackdropClick={true} >
         {selectedTransaction && (
           <Box padding={3} >
 
@@ -137,29 +139,40 @@ const FourthSection = () => {
                 {selectedTransaction.status}
               </span>
             </Typography>
-            <Typography variant="body1" mb={1}>
+            {selectedTransaction.cryptoDepositModel ? (
+            <>
+              <Typography variant="body1" mb={1}>
+                <strong>Blockchain:</strong> {selectedTransaction.cryptoDepositModel.blockchain}
+              </Typography>
+              <Typography variant="body1" mb={1}>
               <strong>Amount:</strong> {selectedTransaction.cryptoDepositModel.amount} {selectedTransaction.cryptoDepositModel.currency.toUpperCase()}
             </Typography>
-            <Typography variant="body1" mb={1}>
-              <strong>Blockchain:</strong> {selectedTransaction.cryptoDepositModel.blockchain}
-            </Typography>
-            <Typography variant="body1" mb={1}>
-              <strong>From Address:</strong> {selectedTransaction.cryptoDepositModel.fromAddress}
-            </Typography>
-            <Typography variant="body1" mb={1}>
-              <strong>To Address:</strong> {selectedTransaction.cryptoDepositModel.toAddress}
-            </Typography>
-            <Typography variant="body1" mb={2}>
-              <strong>Transaction Hash:</strong> {selectedTransaction.cryptoDepositModel.txHash}
-            </Typography>
+              <Typography variant="body1" mb={1}>
+                <strong>From Address:</strong> {selectedTransaction.cryptoDepositModel.fromAddress}
+              </Typography>
+              <Typography variant="body1" mb={1}>
+                <strong>To Address:</strong> {selectedTransaction.cryptoDepositModel.toAddress}
+              </Typography>
+              <Typography variant="body1" mb={2}>
+                <strong>Transaction Hash:</strong> {selectedTransaction.cryptoDepositModel.txHash}
+              </Typography>
+            </>
+          ) : (
+            // Handle case where `subscriptionFeeTransferModel` is available
+            <>
+              <Typography variant="body1" mb={1}>
+                <strong>Amount:</strong> {selectedTransaction.subscriptionFeeTransferModel.amount} {selectedTransaction.subscriptionFeeTransferModel.currency.toUpperCase()}
+              </Typography>
+            </>
+          )}
 
-            <Box display="flex" justifyContent="flex-end">
-              <CustomButton variant="contained" color="primary" onClick={handleModalClose}>
-                Close
-              </CustomButton>
-            </Box>
+          <Box display="flex" justifyContent="flex-end">
+            <CustomButton variant="contained" color="primary" onClick={handleModalClose}>
+              Close
+            </CustomButton>
           </Box>
-        )}
+        </Box>
+      )}
       </CustomModal>
     </Box>
   );

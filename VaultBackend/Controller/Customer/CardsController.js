@@ -420,14 +420,17 @@ getCardList : async (req, res) => {
     }
   }
 },
-changeCardStatus : async (req, res) => {
+changeCardStatus: async (req, res) => {
   try {
     const userId = req.user._id;
     const getData = await fetchVaultDetails(userId);
     const vaultToken = getData?.vaultUser?.access_token;
+    console.log("VaultToken from change pin route", vaultToken);
 
     const { cardId } = req.params;
-    const { requiredStatus } = req.query;
+    const { requiredStatus } = req.query;  // Fetch from query parameters instead of body
+    console.log(`Data from change pin route, ${cardId} & ${requiredStatus}`);
+
     // Input validation
     if (!cardId) {
       return res.status(400).json({
@@ -439,19 +442,23 @@ changeCardStatus : async (req, res) => {
     if (!requiredStatus) {
       return res.status(400).json({
         status: 400,
-        message: "RequiredStatus are required ."
+        message: "RequiredStatus is required."
       });
     }
 
     const response = await axios.post(
       `${VAULT_BASE_URL}/card-holder/cardholder/card/${cardId}/change-status`,
-      {},
+      {},  // No need to pass requiredStatus in the body, it's in query
       {
         headers: {
           Authorization: `Bearer ${vaultToken}`,
         },
+        params: { requiredStatus }  // Pass requiredStatus as a query parameter
       }
     );
+
+    // Log the response from Vault API
+    console.log('Vault API Response:', response.data);
 
     return res.status(response.status).json(response.data);
   } catch (error) {

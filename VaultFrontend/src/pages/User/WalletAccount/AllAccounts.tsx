@@ -14,7 +14,7 @@ const AllAccounts = () => {
   const [expanded, setExpanded] = useState<string | null>(null); // account id
   const [details, setDetails] = useState<{[id: string]: any}>({});
   const [detailsLoading, setDetailsLoading] = useState(false);
-  const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+  const url = import.meta.env.VITE_NODE_ENV === "production" ? "api" : "api";
 
   useEffect(() => {
     const fetchAccounts = async () => {
@@ -24,7 +24,7 @@ const AllAccounts = () => {
         toast.error('Token not found');
         return;
       }
-        const res = await axios.get(`${API_URL}/wallet/all-accounts`, {
+        const res = await axios.get(`${url}/wallet/all-accounts`, {
           headers: {
             Authorization: `Bearer ${localStorage.getItem('token')}`,
           },
@@ -57,7 +57,7 @@ const AllAccounts = () => {
       return;
     }
 
-    const res = await axios.get(`${API_URL}/wallet/account/${accountId}`, {
+    const res = await axios.get(`${url}/wallet/account/${accountId}`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },

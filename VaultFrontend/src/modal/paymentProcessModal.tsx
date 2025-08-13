@@ -10,7 +10,6 @@ import { useAppToast } from '@/utils/Toast';
 import { Currency } from 'lucide-react';
 import api from '@/helpers/apiHelper';
 
-const url = import.meta.env.VITE_NODE_ENV === "production" ? "api" : "api";
 
 const PaymentDetails = ({ open, onClose, invoice }: any) => {
   const toast = useAppToast();
@@ -24,6 +23,7 @@ const PaymentDetails = ({ open, onClose, invoice }: any) => {
   const [selectedAccount, setSelectedAccount] = useState<string | null>(localStorage.getItem('selectedAccountId'));
   const [confirmLoading, setConfirmLoading] = useState(false);
   const [updateLoading, setUpdateLoading] = useState(false);
+  const url = import.meta.env.VITE_NODE_ENV === "production" ? "api" : "api";
 
   useEffect(() => {
     if (open) {

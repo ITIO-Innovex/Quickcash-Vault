@@ -5,7 +5,7 @@ import SubscriptionInvoice from './SubscriptionInvoice'
 import React, { useState } from 'react'
 import axios from 'axios'
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+const url = import.meta.env.VITE_NODE_ENV === "production" ? "api" : "api";
 
 const Main = () => {
   const theme = useTheme();
@@ -16,7 +16,7 @@ const Main = () => {
  const handleInvoiceClick = async () => {
   setLoading(true);
   try {
-    const response = await axios.get(`${API_URL}/subscription/invoice`, {
+    const response = await axios.get(`${url}/subscription/invoice`, {
       headers: {
         'Authorization': `Bearer ${localStorage.getItem('token')}`
       }

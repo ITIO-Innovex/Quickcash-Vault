@@ -7,7 +7,7 @@ import { Card, CardContent,Typography,Grid, Chip,useTheme, CardActions, Slide, B
 import CommonLoader from "@/components/CommonLoader";
 import { useAppToast } from "@/utils/Toast";
 
-const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
+const url = import.meta.env.VITE_NODE_ENV === "production" ? "api" : "api";
 
 interface Plan {
   id: string;
@@ -39,7 +39,7 @@ const PlansList = () => {
         return;
       }
 
-      const response = await axios.get(`${API_URL}/subscription/available`, {
+      const response = await axios.get(`${url}/subscription/available`, {
         headers: { Authorization: `Bearer ${token}` },
       });
 
@@ -61,7 +61,7 @@ const PlansList = () => {
       }
 
       const response = await axios.post(
-        `${API_URL}/subscription/start`,
+        `${url}}/subscription/start`,
         {
           anyCurrency: true,
           subscriptionDetailsId: plan.id,

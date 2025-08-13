@@ -1,13 +1,14 @@
-// DirectExchangeModal.jsx
 import api from "@/helpers/apiHelper";
-import React, { useState } from "react";
+import { useState } from "react";
 import { useAppToast } from "@/utils/Toast";
 import CustomModal from "@/components/CustomModal";
 import CustomInput from "@/components/CustomInputField";
 import CustomButton from "@/components/CustomButton";
+import { Box } from "@mui/material";
 
 const DirectExchangeModal = ({ open, onClose }) => {
   const toast = useAppToast();
+  const [loading , setLoading] = useState(false);
 
   // Form state
   const [fromAccount, setFromAccount] = useState("");
@@ -30,6 +31,7 @@ const DirectExchangeModal = ({ open, onClose }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setLoading(true);
     try {
       const token = localStorage.getItem("token");
       if (!token) {
@@ -75,6 +77,8 @@ const DirectExchangeModal = ({ open, onClose }) => {
         errorMsg = err.response.data.message;
       }
       toast.error(errorMsg);
+    } finally{
+      setLoading(false);
     }
   };
 
@@ -100,9 +104,11 @@ const DirectExchangeModal = ({ open, onClose }) => {
         <CustomInput type="text" value={validUntil} onChange={e => setValidUntil(e.target.value)} label="Valid Until" required />
         <CustomInput type="text" value={signature} onChange={e => setSignature(e.target.value)} label="Signature" required />
 
-        <CustomButton className="form-submit-btn" type="submit" style={{ marginTop: 18 }}>
+        <Box display="flex" justifyContent="flex-end" mt={2}>
+        <CustomButton loading={loading} className="form-submit-btn" type="submit" style={{ marginTop: 18 }}>
           Submit Exchange
         </CustomButton>
+        </Box>
       </form>
     </CustomModal>
   );

@@ -28,6 +28,7 @@ const ForgconfirmCodeasswordModal: React.FC<Props> = ({ open, onClose }) => {
   const [email, setEmail] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [showSuccess, setShowSuccess] = useState(false);
+  const url = import.meta.env.VITE_NODE_ENV === "production" ? "api" : "api";
 
   const handleContinue = async () => {
     setError("");
@@ -37,7 +38,7 @@ const ForgconfirmCodeasswordModal: React.FC<Props> = ({ open, onClose }) => {
       try {
         localStorage.setItem('resetEmail', email); // Save email in localStorage
         const response = await axios.post(
-          `${import.meta.env.VITE_API_URL || 'http://localhost:5000/api'}/customer/password/reset`,
+          `${url}/customer/password/reset`,
           
            { email }, 
            {
@@ -66,7 +67,7 @@ const ForgconfirmCodeasswordModal: React.FC<Props> = ({ open, onClose }) => {
     }
 
     const response = await axios.post(
-      `${import.meta.env.VITE_API_URL || 'http://localhost:5000/api'}/customer/password/reset/confirm`,
+      `${url}/customer/password/reset/confirm`,
 
       { email, confirmCode, },
       {
@@ -111,7 +112,7 @@ const ForgconfirmCodeasswordModal: React.FC<Props> = ({ open, onClose }) => {
 
   try {
     const response = await axios.post(
-      `${import.meta.env.VITE_API_URL || 'http://localhost:5000/api'}/customer/password/reset/execute`,
+      `${url}/customer/password/reset/execute`,
 
       { email, newPassword, payload, },
       {

@@ -24,7 +24,7 @@ const UserLogin = () => {
   const [loading, setLoading] = useState(false);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+  const url = import.meta.env.VITE_NODE_ENV === "production" ? "api" : "api";
 
 const { login } = useAuth(); // ✅ Get login from context
 
@@ -36,7 +36,7 @@ const handleLogin = async (e: React.FormEvent) => {
     const device = navigator.userAgent || 'Unknown';
     const platform = navigator.platform || 'Unknown';
 
-    const response = await axios.post(`${API_URL}/customer/login`, {
+    const response = await axios.post(`${url}/customer/login`, {
       email,
       password,
       device,
