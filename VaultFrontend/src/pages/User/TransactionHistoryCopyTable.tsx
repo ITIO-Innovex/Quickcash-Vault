@@ -30,7 +30,7 @@ const TransactionHistory = () => {
         }
 
         // API call
-        const res = await api.get(`/${url}/operation/payin-all`, {
+        const res = await api.get(`${url}/operation/payin-all`, {
           headers: { Authorization: `Bearer ${token}` },
         });
         // console.log("Payin API response:", res.data);
