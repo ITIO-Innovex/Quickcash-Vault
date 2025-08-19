@@ -1,33 +1,79 @@
-import React, { useEffect , useState} from 'react';
-import GenericTable from '../../components/common/genericTable';
-import Loader from '../../components/common/loader';
+import { useState } from 'react';
+import api from '@/helpers/apiHelper';
+import { useAppToast } from '@/utils/Toast';
+import {Box,Typography, useTheme,} from '@mui/material';
+import { useNavigate } from 'react-router-dom';
+import CustomButton from '@/components/CustomButton';
+import CustomInput from '@/components/CustomInputField';
 
-const ContactUs: React.FC = () => {
-    const [loading, setloading] = useState(true);
+const url = import.meta.env.VITE_NODE_ENV == "production" ? 'api' : 'api'; 
 
-    useEffect(()=>{
-        const timer = setTimeout(()=> setloading(false),200);
-        return ()=> clearTimeout(timer);
-    }, []);
+const ContactForm = () => {
+  const theme = useTheme();
+  const navigate = useNavigate();
+  const toast = useAppToast();
 
-    if (loading) return <Loader/>
-    const columns =[
-        {field: 'name', headerName: 'Name'},
-        {field: 'email', headerName: 'Email'},
-        {field: 'message', headerName: 'Message'},
-        {field: 'module', headerName: 'Module'},
-    ];
+  const [formData, setFormData] = useState({ fullName: '', contactNumber: '', companyName: '', email: '', description: '',});
 
-    const data = [
-        {name:'SHRISTY', email:'s@example.com', message:'Need help with my account.', module:'Crypto'},
-        {name:'Riya', email:'r@example.com', message:'Issue with payment.', module:'invoice'},
-    ]
+  const [isSubmitting, setIsSubmitting] = useState(false); // track submit state
 
-    return(
-        <div style={{padding: '2rem'}}>
-            <h2>Contact Requests</h2>
-            <GenericTable columns={columns} data={data}/>
-        </div>
-    )
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setIsSubmitting(true); // disable button
+
+    try {
+      const res = await api.post(`/${url}/contact/send`, formData);
+      if (res.status !== 200) {
+        toast.success(res.data.message || 'Something went wrong!');
+      }
+
+     toast.success( 'Thanks for reaching out! We’ve received your message and will get back to you soon.');
+
+      setFormData({ fullName: '', contactNumber: '', companyName: '', email: '',description: '' });
+      
+      navigate('/');
+    } catch (error) {
+      console.error('Email Send Error:', error);
+      toast.error(
+        error?.response?.data?.message || 'Something went wrong while sending your message.'
+      );
+    } finally {
+      setIsSubmitting(false); // re-enable button
+    }
+  };
+
+  return (
+    <div className="contact-form-wrapper">
+      <Box className="contact-form-box">
+        <Typography variant="h6" className="form-heading">
+          Contact Us
+        </Typography>
+
+        <Box component="form" onSubmit={handleSubmit} className="contact-form">
+          <CustomInput label="Full Name" name="fullName" required value={formData.fullName} onChange={handleChange}/>
+
+          <CustomInput label="Contact Number" name="contactNumber" required value={formData.contactNumber} onChange={handleChange} />
+
+          <CustomInput label="Company Name" name="companyName" required value={formData.companyName} onChange={handleChange} />
+
+          <CustomInput label="Email" name="email" required value={formData.email} onChange={handleChange} />
+
+          <CustomInput label="Description" name="description" required value={formData.description} onChange={handleChange} multiline minRows={4} className="description-field" />
+
+          <Box className="form-button-box">
+            <CustomButton type="submit" disabled={isSubmitting}>
+              {isSubmitting ? 'Submitting...' : 'Submit'}
+            </CustomButton>
+          </Box>
+        </Box>
+      </Box>
+    </div>
+  );
 };
-export default ContactUs;
+
+export default ContactForm;

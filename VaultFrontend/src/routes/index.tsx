@@ -44,26 +44,22 @@ import CryptoDashboard from '@/pages/User/Crypto/Dashboard';
 import ForgotPasswordPage from '@/pages/User/ForgotPassord';
 import BusinessKyc from '@/pages/Admin/KYC/BusinessKyc/main';
 import WalletAccounts from '@/pages/User/WalletAccount/main';
+import PrivacyPolicy from '@/pages/LandingPage/PrivacyPolicy';
 import AdminDashboard from '@/pages/Admin/Dashboard/Dashboard';
 import ProceedPage from '@/pages/User/BuySellSwap/ProceedPage';
 import { createBrowserRouter, Navigate } from 'react-router-dom';
 import TransferReuest from '@/pages/Admin/Crypto/Transfers/main';
-import AllAccounts from '@/pages/User/AccountSection/allAccounts';
 import BusinessRegister from '@/pages/User/BusinessRegister/main';
 import Settings from '@/pages/User/InvoiceDashboard/Settings/main'; 
 import AllSubscriptions from '@/pages/User/Subscriptions/Plans/main'; 
 import WalletRequest from '@/pages/Admin/Crypto/WalletRequests/main';
-// import SignYourSelf from '@/pages/User/DigitalSignature/SignYourSelf';
 import MySubscriptions from '@/pages/User/Subscriptions/MyPlanss/main';
 import InvoiceDashboard from '@/pages/User/InvoiceDashboard/Dashboard';
 import CardRequests from '@/pages/User/cards/card-details/cardRequests';
 import SendMoney from '@/pages/User/dashboardInsideForms/sendMoney/main';
 import TotalTransactions from '@/pages/Admin/Fiat/TotalTransactions/main';
-// import DigitalSignature from '../pages/User/DigitalSignature/index.jsx';
 import InvoiceQuotes from '@/pages/User/InvoiceDashboard/InvoiceQuote/main';
-// import SignYourSelfForm from '@/pages/User/DigitalSignature/SignYourselfForm';
 import InvoiceProduct from '@/pages/User/InvoiceDashboard/InvoiceProduct/main';
-// import Recipient from '@/pages/User/dashboardInsideForms/sendMoney/recipient';
 import InvoiceTemplate from '@/pages/User/InvoiceDashboard/InvoiceTemplate/main';
 import InvoiceCategory from '@/pages/User/InvoiceDashboard/InvoiceCategory/main';
 import PendingTransactionsList from '@/pages/Admin/Fiat/PendingTransactions/main';
@@ -76,38 +72,31 @@ import SelectBeneficiary from '@/pages/User/dashboardInsideForms/sendMoney/selec
 
   import { useAuth } from '@/contexts/authContext';
   import path from 'path';
+  // --- Allowed paths for incomplete KYC ---
+const UNRESTRICTED_ROUTES = ['/dashboard', '/kyc'];
+
 // --- Auth Route Wrapper ---
 const PrivateRoute = ({ children }: { children: JSX.Element }) => {
   const { isAuthenticated, loading, kycStatus,subscriptionDetails, logout } = useAuth();
 
-      if (loading) return null; // wait for auth state to load before redirecting
+  if (loading || kycStatus === null || kycStatus === undefined) return null;
 
   const currentPath = window.location.pathname;
-  const allowedRoutes = [ '/dashboard'];
-  // Only redirect to /dashboard if KYC is not completed and the current path is not /dashboard
-  if (kycStatus !== 'completed' && !allowedRoutes.includes(currentPath)) {
-    return <Navigate to="/dashboard" />;
+
+  // If user not authenticated, redirect to login/home
+  if (!isAuthenticated) return <Navigate to="/" replace />;
+
+  // If KYC is completed, allow ALL routes!
+  if (kycStatus === 'completed') return children;
+
+  // If KYC is not completed, allow only /dashboard or /kyc
+  if (!UNRESTRICTED_ROUTES.includes(currentPath)) {
+    // Not allowed? Redirect to /kyc if not already there, else /dashboard
+    return <Navigate to="/dashboard" replace />;
   }
 
-  if (localStorage.getItem('source')) {
-    const ALLOWED_URLS = [
-      '/digital-signature/placeholder-sign',
-      '/digital-signature/recipientSignPdf'
-    ];
-  
-    const currentPath = window.location.pathname;
-    const isBlocked = !ALLOWED_URLS.some((allowedPath) =>
-      currentPath.startsWith(allowedPath)
-    );
-  
-    if (isBlocked) {
-      logout();
-      return <Navigate to="/" />;
-    }
-  }
-  console.log('isAuthenticated', isAuthenticated);
-  console.log('loading', loading);
-  return isAuthenticated ? children : <Navigate to="/" />;
+  // Allowed path for incomplete KYC? Allow!
+  return children;
 };
 
 // if admin authenticated, redirect to admin dashboard
@@ -142,63 +131,53 @@ const AdminProtectedRoute = ({ children }: { children: JSX.Element }) => {
       { path: '/login', element: <UserLogin /> },
       { path: '/register', element: <UserSignup /> },
       { path: '/login-admin', element: <AdminLogin /> },
-      
+      { path: '/privacy-policy', element: <PrivacyPolicy /> },
       { path: '/forgot-password', element: <ForgotPasswordPage /> },
     ]
     
-    const authRoutes = [
-      { path: '/kyc', element: <KYC /> },
-      { path: '/demo', element: <Demo /> },
-      { path: '/spot', element: <Spot /> },
-      { path: '/cards', element: <Cards /> },
-      { path: '/tokens', element: <Tokens/> },
-      { path: '/wallets', element: <Wallet /> },
-      { path: '/clients', element: <Clients /> },
-      { path: '/currency', element: <Currency/> },
-      { path: '/settings', element: <Settings /> },
-      { path: '/help-center', element: <Tickets /> },
-      { path: '/send-money', element: <SendMoney /> },
-      { path: '/refer-earn', element: <ReferEarn /> },
-      { path: '/add-client', element: <AddClient /> },
-      { path: '/statements', element: <Statements /> },
-      { path: '/blockchain', element: <Blockchain /> },
-      { path: '/dashboard', element: <UserDashboard /> },
-      { path: '/buysellswap', element: <BuySellSwap /> },
-      { path: '/my-plans', element: <MySubscriptions /> },
-      { path: '/user-profile', element: <UserProfile /> },
-      { path: '/admin-dashboard', element: <Dashboard /> },
-      { path: '/transactions', element: <Transactions /> },
-      { path: '/all-plans', element: <AllSubscriptions /> },
-      { path: '/card-requests', element: <CardRequests /> },
-      // { path: '/account-section', element: <AllAccounts /> },
-      { path: '/invoice-quotes', element: <InvoiceQuotes /> },
-      { path: '/summary-tokens', element: <SummaryTokens /> },
-      { path: '/exchange-pairs', element: <ExchangePairs /> },
-      { path: '/instrument-pairs', element: <InstrumentPairs /> },
-      { path: '/manual-payment', element: <ManualPayment /> },
-      { path: '/beneficiary', element: <SelectBeneficiary /> },
-      { path: '/wallet-accounts', element: <WalletAccounts /> },
-      { path: '/buysellswap/proceed', element: <ProceedPage /> },
-      { path: '/invoice-products', element: <InvoiceProduct /> },
-      { path: '/invoice-category', element: <InvoiceCategory /> },
-      { path: '/crypto-dashboard', element: <CryptoDashboard /> },
-      { path: '/template-settings', element: <InvoiceTemplate /> },
-      { path: '/register-business', element: <BusinessRegister /> },
-      { path: '/add-beneficiary', element: <AddBeneficiaryForm /> },
-      { path: '/invoice-dashboard', element: <InvoiceDashboard /> },
-      { path: '/original-invoices', element: < OriginalInvoices /> },
-      { path: '/recurring-invoices', element: < RecurringInvoices /> },
-      { path: '/invoice-transactions', element: <InvoiceTransactions /> },
-      // { path: '/digital-signature', element: <DigitalSignature /> },
-      // {
-      //   path: '/digital-signature/sign-yourself/:docId',
-      //   element: <SignYourSelf />,
-      // },
-      // {
-      //   path: '/digital-signature/sign-yourself-form',
-      //   element: <SignYourSelfForm />,
-      // },
-    ]
+      const authRoutes = [
+        { path: '/kyc', element: <KYC /> },
+        { path: '/demo', element: <Demo /> },
+        { path: '/spot', element: <Spot /> },
+        { path: '/cards', element: <Cards /> },
+        { path: '/tokens', element: <Tokens/> },
+        { path: '/wallets', element: <Wallet /> },
+        { path: '/clients', element: <Clients /> },
+        { path: '/currency', element: <Currency/> },
+        { path: '/settings', element: <Settings /> },
+        { path: '/help-center', element: <Tickets /> },
+        { path: '/send-money', element: <SendMoney /> },
+        { path: '/refer-earn', element: <ReferEarn /> },
+        { path: '/add-client', element: <AddClient /> },
+        { path: '/statements', element: <Statements /> },
+        { path: '/blockchain', element: <Blockchain /> },
+        { path: '/dashboard', element: <UserDashboard /> },
+        { path: '/buysellswap', element: <BuySellSwap /> },
+        { path: '/my-plans', element: <MySubscriptions /> },
+        { path: '/user-profile', element: <UserProfile /> },
+        { path: '/admin-dashboard', element: <Dashboard /> },
+        { path: '/transactions', element: <Transactions /> },
+        { path: '/all-plans', element: <AllSubscriptions /> },
+        { path: '/card-requests', element: <CardRequests /> },
+        { path: '/invoice-quotes', element: <InvoiceQuotes /> },
+        { path: '/summary-tokens', element: <SummaryTokens /> },
+        { path: '/exchange-pairs', element: <ExchangePairs /> },
+        { path: '/manual-payment', element: <ManualPayment /> },
+        { path: '/beneficiary', element: <SelectBeneficiary /> },
+        { path: '/wallet-accounts', element: <WalletAccounts /> },
+        { path: '/buysellswap/proceed', element: <ProceedPage /> },
+        { path: '/invoice-products', element: <InvoiceProduct /> },
+        { path: '/instrument-pairs', element: <InstrumentPairs /> },
+        { path: '/invoice-category', element: <InvoiceCategory /> },
+        { path: '/crypto-dashboard', element: <CryptoDashboard /> },
+        { path: '/template-settings', element: <InvoiceTemplate /> },
+        { path: '/register-business', element: <BusinessRegister /> },
+        { path: '/add-beneficiary', element: <AddBeneficiaryForm /> },
+        { path: '/invoice-dashboard', element: <InvoiceDashboard /> },
+        { path: '/original-invoices', element: < OriginalInvoices /> },
+        { path: '/recurring-invoices', element: < RecurringInvoices /> },
+        { path: '/invoice-transactions', element: <InvoiceTransactions /> },
+      ]
 
 // --- Admin Routes ---
 const adminRoutes = [

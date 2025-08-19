@@ -1,5 +1,3 @@
-// src/types/jwt.ts
-
 export interface JwtPayload {
   sub: string;
   role: string;

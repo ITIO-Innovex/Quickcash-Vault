@@ -10,7 +10,8 @@ const vaultUserSchema = new mongoose.Schema({
   expiresIn: { type: Number },
   accessTokenExpiresAt: { type: Date }, // Track when access token expires
   refreshTokenCreatedAt: { type: Date }, // Track when refresh token was issued
-  sumsubToken: { type: String },  // New field to store Sumsub token
+  sumsubToken: { type: String },
+  upgradedToken: { type: String }, // New field to store Sumsub token
 }, { timestamps: true });
 
 module.exports = mongoose.model('VaultUser', vaultUserSchema);

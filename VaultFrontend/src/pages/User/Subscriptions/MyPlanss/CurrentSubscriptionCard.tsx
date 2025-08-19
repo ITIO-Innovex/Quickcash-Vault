@@ -1,36 +1,34 @@
-import axios from 'axios';
 import dayjs from 'dayjs';
+import api from '@/helpers/apiHelper';
 import Link from '@mui/material/Link';
 import { motion } from 'framer-motion';
 import { useEffect, useState } from 'react';
 import CustomNoteBox from '@/components/CustomNote';
+import CommonLoader from '@/components/CommonLoader';
 import { Link as RouterLink } from 'react-router-dom';
 const url = import.meta.env.VITE_NODE_ENV === "production" ? "api" : "api";
 import { Card, CardContent, Typography, Chip, Box, useTheme } from '@mui/material';
-import CommonLoader from '@/components/CommonLoader';
 
 const CurrentSubscriptionCard = () => {
   const theme = useTheme();
   const [loading, setLoading] = useState(true);
- const [subscription, setSubscription] = useState<any>(null);
+  const [subscription, setSubscription] = useState<any>(null);
 
   useEffect(() => {
     const fetchCurrentSubscription = async () => {
       try {
         const token = localStorage.getItem("token");
-      if (!token) {
-        console.warn("Token not found in localStorage");
-        return;
-      }
-          const response = await axios.get(`${url}/subscription/current`, {
-                headers: { Authorization: `Bearer ${token}` },
+          const response = await api.get(`${url}/subscription/current`, {
+            headers: { Authorization: `Bearer ${token}` },
               }); 
-        setSubscription(response.data.data);
-      } catch (error) {
-        console.error('❌ Error fetching current subscription:', error);
-      }finally {
-        setLoading(false);   // Loader OFF after response
-      }
+            setSubscription(response.data.data);
+            const subscriptionName = response.data.data.subscriptionDetails.name;
+            localStorage.setItem('subscriptionName', subscriptionName);  
+        } catch (error) {
+          console.error('❌ Error fetching current subscription:', error);
+        }finally {
+          setLoading(false); 
+        }
     };
 
     fetchCurrentSubscription();
@@ -38,9 +36,19 @@ const CurrentSubscriptionCard = () => {
 
   if (loading) {
   return <CommonLoader show={true} />;
-}
-if (!subscription) {
-  return null;
+  }
+  
+  if (!subscription) {
+  return (
+    <Box sx={{ backgroundColor: theme.palette.background.default, p: 3 }}>
+          <Typography variant="h6" color="textSecondary" sx={{ mb: 1 }}>
+            You haven’t subscribed to any of the subscriptions yet.
+          </Typography>
+          <Link component={RouterLink} to="/all-plans" color="primary" underline="always" style={{ cursor: 'pointer', fontWeight: 600 }} >
+            Subscribe Now
+          </Link>
+    </Box>
+  );
 }
 
   const { subscriptionDetails, status, createdAt, nextPaymentDate, lastPaymentInvoiceStatus } = subscription;
@@ -105,6 +113,7 @@ if (!subscription) {
     </Card>
     </motion.div>
     </Box>
+    
   );
 };
 

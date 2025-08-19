@@ -3,6 +3,7 @@ const { fetchVaultDetails } = require("../../Utils/fetchVaultDetails");
 const {
   VAULT_SUMSUB_TOKEN_URL,
   VAULT_HEADERS,
+  VAULT_BASE_URL,
 } = require("../../Config/VaultConfig");
 
 const jwt = require("jsonwebtoken");
@@ -69,7 +70,7 @@ module.exports = {
       });
     }
   },
-  updateSumsabKyc: async (req, res) => {
+  updateSumsubKyc: async (req, res) => {
     const {
       attemptCnt,
       attemptId,
@@ -135,4 +136,99 @@ module.exports = {
       console.log(err);
     }
   },
+  getVerificationData: async (req, res) => {
+    try {
+    // 1. Get user ID from request
+    const userId = req.user._id;
+    console.log("User ID from request:", userId);
+
+    // 2. Fetch vault details
+    const getData = await fetchVaultDetails(userId);
+    if (!getData) {
+      return res.status(401).json({
+        status: 401,
+        message: "Access Denied: Vault user not found",
+        data: null,
+      });
+    }
+
+    // 3. Get access token from vault
+    const vaultToken = getData.vaultUser.access_token;
+
+    // 4. Make GET request to the Sumsub API with the access token in Authorization header
+    const response = await axios.get(`${VAULT_BASE_URL}/reg/v2/verification/sumsub/data`, {
+        headers: {
+          Authorization: `Bearer ${vaultToken}`,
+          ...VAULT_HEADERS(),
+        },
+      });
+
+    // 5. Send success response
+    return res.status(200).json({
+      status: 200,
+      message: "Sumsub data fetched successfully",
+      data: response.data,
+    });
+
+  } catch (error) {
+    // error.response?.data agar api ka error hai to mil jayega
+    return res.status(error?.response?.status || 500).json({
+      status: error?.response?.status || 500,
+      message: error?.message || "Failed to fetch sumsub data",
+      data: error?.response?.data || null,
+    });
+  }
+  },
+  upgradeSumsubToken : async (req, res) => {
+  try {
+    // 1. Get user ID from request
+    const userId = req.user._id;
+
+    // 2. Fetch vault details
+    const getData = await fetchVaultDetails(userId);
+    if (!getData) {
+      return res.status(401).json({
+        status: 401,
+        message: "Access Denied: Vault user not found",
+        data: null,
+      });
+    }
+
+    // 3. Get access token from vault
+    const vaultToken = getData.vaultUser.access_token;
+    // console.log('Vault Token from Update Sumsub route =>',vaultToken);
+     // 4. Make POST request to the  Upgrade the Sumsub token 
+   const response = await axios.post(
+      `${VAULT_BASE_URL}/reg/v2/verification/sumsub/token/upgraded`, // URL
+      {}, // POST body, empty object because API expects none
+      {
+        headers: {
+          Authorization: `Bearer ${vaultToken}`,
+          ...VAULT_HEADERS(),
+        },
+      }
+    );
+    const upgradedToken  = response.data.token; 
+
+    // Update in DB
+     const updatedUser = await VaultUser.findOneAndUpdate(
+        {_id: req.user._id }, // Search by userId
+        { $set: {upgradedToken}},  // Save the token
+        { new: true }  // Return the updated document
+      );
+
+    return res.status(200).json({
+      status: 200,
+      message: "Upgraded Sumsub token fetched and saved",
+      data: response.data,
+    });
+
+  } catch (error) {
+    return res.status(error?.response?.status || 500).json({
+      status: error?.response?.status || 500,
+      message: error?.message || "Failed to fetch/save upgraded token",
+      data: error?.response?.data || null,
+    });
+  }
+},
 };

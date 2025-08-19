@@ -25,13 +25,18 @@ interface Plan {
 const PlansList = () => {
   const theme = useTheme();
   const toast = useAppToast();
+  const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
   const [plans, setPlans] = useState<Plan[]>([]);
-  const navigate = useNavigate();
   const [subscribedPlanId, setSubscribedPlanId] = useState<string | null>(null);
-  
+  const [subscriptionName, setSubscriptionName] = useState(null);
+
+  useEffect (()=>{
+    const name = localStorage.getItem('subscriptionName');
+    setSubscriptionName(name);
+  })
+
   const fetchSubscriptions = async () => {
-    
     try {
       const token = localStorage.getItem("token");
       if (!token) {
@@ -42,12 +47,12 @@ const PlansList = () => {
       const response = await axios.get(`${url}/subscription/available`, {
         headers: { Authorization: `Bearer ${token}` },
       });
-
+      console.log(response.data);
       setPlans(response.data.data || []);
     } catch (error) {
       console.error("❌ Error fetching subscriptions:", error?.response?.data || error.message);
     }finally {
-        setLoading(false);   // Loader OFF after response
+        setLoading(false);  
       }
   };
 
@@ -61,7 +66,7 @@ const PlansList = () => {
       }
 
       const response = await axios.post(
-        `${url}}/subscription/start`,
+        `${url}/subscription/start`,
         {
           anyCurrency: true,
           subscriptionDetailsId: plan.id,
@@ -114,17 +119,8 @@ const PlansList = () => {
                       {plan.name}
                     </Typography>
                     {plan.mostPopular && (
-                      <Chip
-                        icon={<Star size={18} />}
-                        label="Most Popular"
-                        size="small"
-                        sx={{
-                          backgroundColor: "#483594",
-                          color: "#ccc",
-                          fontWeight: 500,
-                        }}
-                      />
-                    )}
+                      <Chip icon={<Star size={18} />} label="Most Popular" size="small"
+                        sx={{ backgroundColor: "#483594", color: "#ccc", fontWeight: 500, }} />)}
                   </Box>
 
                   <Typography variant="body2" mb={1}>
@@ -151,34 +147,23 @@ const PlansList = () => {
                   </Typography>
 
                   {plan.trialAvailable && (
-                    <Chip
-                      label="Free Trial Available"
-                      size="small"
-                      sx={{
-                        backgroundColor: "#483594",
-                        color: "#fff",
-                        fontWeight: 500,
-                        mt: 1,
-                      }}
-                    />
-                  )}
+                    <Chip label="Free Trial Available" size="small"
+                      sx={{ backgroundColor: "#483594", color: "#fff", fontWeight: 500, mt: 1, }}/> )}
                 </CardContent>
 
-                <CardActions className="p-3">
-                 <CustomButton
-                  fullWidth
-                  onClick={() => handleSubscribe(plan)} // 🔥 important
-                  loading={loading}
-                  sx={{
-                    backgroundColor: "#483594",
-                    "&:hover": {
-                      backgroundColor: "#3a296f",
-                    },
-                  }}
-                >
-                  {loading ? 'Loading...' : 'Subscribe'}
-                </CustomButton>
-                </CardActions>
+              <CardActions className="p-3">
+                {plan.name === subscriptionName ? (
+                  <CustomButton fullWidth disabled
+                    sx={{ backgroundColor: "#a9a9a9", color: "#fff", fontWeight: 600, cursor: "not-allowed", }}>
+                    Subscribed
+                  </CustomButton>
+                ) : (
+                  <CustomButton fullWidth onClick={() => handleSubscribe(plan)} loading={loading}
+                    sx={{ backgroundColor: "#483594", "&:hover": { backgroundColor: "#3a296f", },}}>
+                    {loading ? "Loading..." : "Subscribe"}
+                  </CustomButton>
+                )}
+              </CardActions>
               </Card>
             </Slide>
           </Grid>

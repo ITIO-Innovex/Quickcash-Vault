@@ -31,7 +31,7 @@ const LoginHistory = () => {
   const toast = useAppToast();
   const [loginData, setLoginData] = useState([]);
   const [loading, setLoading] = useState(true);
-
+  const url = import.meta.env.VITE_NODE_ENV === "production" ? "api" : "api";
   const columns = [
     { field: 'date', headerName: 'DATE & TIME' },
     { field: 'browser', headerName: 'BROWSER' },
@@ -48,7 +48,7 @@ const LoginHistory = () => {
           return;
         }
 
-        const response = await axios.get('http://localhost:5000/api/customer/all-sessions', {
+        const response = await axios.get(`${url}/customer/all-sessions`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -84,7 +84,7 @@ const LoginHistory = () => {
 
   return (
     <Box sx={{ p: 3, backgroundColor: theme.palette.background.default, color: theme.palette.text.primary }}>
-
+        
       {loading ? (
         <CircularProgress size={24} />
       ) : (

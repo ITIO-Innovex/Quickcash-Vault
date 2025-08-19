@@ -43,7 +43,7 @@ const TransactionHistory = () => {
         } else if (err.response?.data?.message) {
           errorMsg = err.response.data.message;
         }
-        toast.error(errorMsg);
+        // toast.error(errorMsg);
         console.error("Payin API error:", err);
       }
     };
@@ -55,15 +55,13 @@ const TransactionHistory = () => {
       <Card>
         <CardContent sx={{ p: 0, '&:last-child': { pb: 0 } }} style={{backgroundColor:theme.palette.background.default}}>
           <Typography
-            variant="h6"
-            sx={{ fontWeight: 'semibold', color: '#1f2937', mb: 2, px: 3, pt: 2, }}>
+            variant="h6" sx={{ fontWeight: 'semibold', mb: 2, px: 3, pt: 2 }}>
             Transaction History
           </Typography>
           <Box sx={{ px: 3, pb: 2 }}>
             <GenericTable
               columns={columns}
               data={payinData}   
-              // data={transactionHistory}    // Static 
             />
           </Box>
         </CardContent>

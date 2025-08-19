@@ -12,13 +12,13 @@ const Footer = () => {
         </Typography>
 
         <Box className="footer-links">
-          <Link href="#" underline="none" className="footer-link">
+          <Link href="/login" underline="none" className="footer-link" >
             Login
           </Link>
-          <Link href="#" underline="none" className="footer-link">
+          <Link href="/register" underline="none" className="footer-link">
             Get Started
           </Link>
-          <Link href="#" underline="none" className="footer-link">
+          <Link href="/privacy-policy" underline="none" className="footer-link">
             Privacy Policy
           </Link>
         </Box>

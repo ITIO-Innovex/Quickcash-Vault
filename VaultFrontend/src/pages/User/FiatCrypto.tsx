@@ -1,7 +1,7 @@
 import 'swiper/css';
 import 'swiper/css/pagination';
 import api from '@/helpers/apiHelper';
-import { Link} from 'react-router-dom';
+import { useContext } from 'react';
 import { Pagination } from 'swiper/modules';
 import { useAppToast } from '@/utils/Toast';
 import AddIcon from '@mui/icons-material/Add';
@@ -10,6 +10,7 @@ import React, { useEffect, useState } from 'react';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Sell, Wallet } from '@mui/icons-material';
 import CustomModal from '@/components/CustomModal';
+import { AuthContext } from '@/contexts/authContext';
 import CustomButton from '@/components/CustomButton';
 import SelectCryptoModal from './selectCurrencyModal';
 import CommonTooltip from '@/components/common/toolTip';
@@ -25,6 +26,7 @@ const FiatCrypto = () => {
   const theme = useTheme();
   const toast = useAppToast();
   const [ibanError, setIbanError] = useState(null);
+  const { subscriptionDetails } = useContext(AuthContext);
   const [loading, setLoading] = useState(false);
   const [wallets, setWallets] = useState([]);
   const [loadingWallets, setLoadingWallets] = useState(false);
@@ -36,7 +38,6 @@ const FiatCrypto = () => {
   const [withdrawIban, setWithdrawIban] = useState('');
   const [withdrawBic, setWithdrawBic] = useState('');
   const [activeIndex, setActiveIndex] = useState(0);
-  const [activeTab, setActiveTab] = useState('Fiat');
   const [ibanAccounts, setIbanAccounts] = useState([]);
   const [ibanLoading, setIbanLoading] = useState(true);
   const [isIbanModalOpen, setIsIbanModalOpen] = useState(false);
@@ -46,17 +47,24 @@ const FiatCrypto = () => {
   const [payinToCurrency, setPayinToCurrency] = useState('');
   const [payinFromAccount, setPayinFromAccount] = useState('');
   const [ibanCurrency, setIbanCurrency] = useState('');
-  const [isDirectExchangeOpen, setIsDirectExchangeOpen] = useState(false);
   const handleExchangeOpen = () => setIsDirectExchangeOpen(true);
   const handleExchangeClose = () => setIsDirectExchangeOpen(false);
+  const [isDirectExchangeOpen, setIsDirectExchangeOpen] = useState(false);
   const [isCurrencyExchnageOpen, setIsCurrencyExchnageOpen] = useState(false);
   const handleTabChange = (event: React.SyntheticEvent, newValue: string) => { setActiveTab(newValue);};
   const handleCurrencyExchangeOpen = () => setIsCurrencyExchnageOpen(true);
   const handleCurrencyExchangeClose = () => setIsCurrencyExchnageOpen(false);
   const [isCryptoModalOpen, setIsCryptoModalOpen] = useState(false);
-
+  
   const handleOpen = () => setIsCryptoModalOpen(true);
   const handleClose = () => setIsCryptoModalOpen(false);
+  
+  const hasIban = Array.isArray(subscriptionDetails)
+  && subscriptionDetails.some(sub =>
+    (sub.name?.toLowerCase().includes("iban") || 
+    sub.description?.toLowerCase().includes("iban"))
+  );
+  const [activeTab, setActiveTab] = useState(hasIban ? "Fiat" : "Crypto");
 
   const [selectedCrypto, setSelectedCrypto] = useState({
     currency: 'USD',
@@ -71,28 +79,28 @@ const FiatCrypto = () => {
     { currency: 'INR', account: 'IN1000000015', balance: '164575.926', flag: 'IN' },
   ];
 
-  useEffect(() => {
-  // Call API on initial mount
-  const fetchIban = async () => {
-    setIbanLoading(true);
-    setIbanError(null);
-    try {
-      const token = localStorage.getItem("token");
-      const res = await api.get(`${url}/iban/all`, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
-      setIbanAccounts(res.data || []);
-    } catch (err) {
-      setIbanError(
-        err.response?.data?.message || "Couldn't load IBANs. Please try again."
-      );
-      setIbanAccounts([]);
-    } finally {
-      setIbanLoading(false);
-    }
-  };
-  fetchIban();
-}, []);
+    useEffect(() => {
+    // Call API on initial mount
+    const fetchIban = async () => {
+      setIbanLoading(true);
+      setIbanError(null);
+      try {
+        const token = localStorage.getItem("token");
+        const res = await api.get(`${url}/iban/all`, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        setIbanAccounts(res.data || []);
+      } catch (err) {
+        setIbanError(
+          err.response?.data?.message || "Couldn't load IBANs. Please try again."
+        );
+        setIbanAccounts([]);
+      } finally {
+        setIbanLoading(false);
+      }
+    };
+    fetchIban();
+  }, []);
 
     // Fetch all wallets (on Crypto tab)
     const fetchWallets = async () => {
@@ -109,7 +117,7 @@ const FiatCrypto = () => {
         });
         if (response.status === 200) {
           setWallets(response.data.data);
-          console.log('wallet response',response.data.data)
+          // console.log('wallet response',response.data.data)
         } else {
           toast.error('Failed to fetch wallets!');
           setWallets([]);
@@ -122,6 +130,13 @@ const FiatCrypto = () => {
         setLoadingWallets(false);
       }
     };
+
+    useEffect(() => {
+    if (!hasIban && activeTab === "Fiat") {
+      setActiveTab("Crypto");
+    }
+  }, [hasIban, activeTab]);
+
     useEffect(() => {
       if (activeTab === 'Crypto') {
         fetchWallets();
@@ -282,9 +297,11 @@ const FiatCrypto = () => {
             <Box className="crypto-section-header" >
               <Tabs value={activeTab} onChange={handleTabChange}
                 sx={{  minHeight: '48px', '& .MuiTab-root': { minHeight: '48px' }, }} >
-                <Tab label="IBAN" value="Fiat" className="label-fiat-crypto" />
+                 {hasIban && (
+                    <Tab label="Fiat" value="Fiat" className="label-fiat-crypto" />
+                  )}
                 <Tab label="Crypto" value="Crypto" className="label-fiat-crypto"/>
-              </Tabs>
+              </Tabs> 
             </Box>
 
             {activeTab === 'Fiat' && (
@@ -424,47 +441,47 @@ const FiatCrypto = () => {
                   {wallets.map((wallet, index) => {
                     const isActive = index === 0;
                     return (
-                      <SwiperSlide key={wallet._id || index}>
-                        <Card className={`crypto-card ${isActive ? 'active' : 'inactive'}`}>
-                          <CardContent className="card-content-custom">
-                            <Box className="main-content-section">
-                             <img
-                                src={`https://assets.coincap.io/assets/icons/${wallet.blockchain}@2x.png`}
-                                alt={`${wallet.symbol} Logo`}
-                                className="img-round"
-                                style={{ width: 32, height: 32 }}
-                                onError={e => {
-                                  const target = e.target as HTMLImageElement;
-                                  target.onerror = null;
-                                  target.src = '/default-coin.png';
-                                }}
-                              />
-                            </Box>
-                            <Box className="currency-detail">
-                              <Typography
-                                variant="body2"
-                                sx={{ color: isActive ? '#e5e7eb' : '#4b5563' }}
-                              >
-                                {wallet.address}
-                              </Typography>
-                              <Typography
-                                className={`account-balance ${isActive ? 'active' : ''}`}
-                                variant="body1"
-                              >
-                                {wallet.type}
-                              </Typography>
-                            </Box>
-                          </CardContent>
-                        </Card>
-                      </SwiperSlide>
+                   <SwiperSlide key={wallet._id || index}>
+                      <Card className={`wallet-card ${isActive ? 'wallet-active' : 'wallet-inactive'}`}>
+                        <CardContent className="wallet-card-content">
+                          <Box className="wallet-main-header">
+                            <img
+                              src={`https://assets.coincap.io/assets/icons/${wallet.blockchain}@2x.png`}
+                              alt={`${wallet.symbol} Logo`}
+                              className="wallet-coin-img"
+                              style={{ width: 32, height: 32 }}
+                              onError={e => {
+                                const target = e.target as HTMLImageElement;
+                                target.onerror = null;
+                                target.src = '/default-coin.png';
+                              }}
+                            />
+                          </Box>
+                          <Box className="wallet-details">
+                            <Typography
+                              className="wallet-address"
+                              variant="body2"
+                              sx={{ color: isActive ? '#e5e7eb' : '#4b5563' }}
+                            >
+                              {wallet.address}
+                            </Typography>
+                            <Typography
+                              className="wallet-type"
+                              variant="body1"
+                            >
+                              {wallet.type}
+                            </Typography>
+                          </Box>
+                        </CardContent>
+                      </Card>
+                    </SwiperSlide>
+
                     );
                   })}
-
                   </Swiper>
                 )}
               </Box>
             )}
-
           </CardContent>
         </Card>
       </Box>

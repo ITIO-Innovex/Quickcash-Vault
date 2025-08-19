@@ -53,9 +53,6 @@ const Navbar: React.FC<NavbarProps> = ({ toggleColorMode, mode }) => {
           },
         }}
       >
-        <Box component="li"  >
-          <Button href="" color="inherit">Blog</Button>
-        </Box>
        <Box component="li" >
         <Button color="inherit" component={Link} to="/contact">
           Contact Us

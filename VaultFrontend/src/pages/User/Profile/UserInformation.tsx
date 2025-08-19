@@ -46,7 +46,14 @@ const UserInformation: React.FC<UserInformationProps> = ({ userData, loading }) 
     console.log('Update clicked. Selected image name:', imageName);
   };
 
-  if (loading) return <CircularProgress />;
+  if (loading) {
+    return (
+      <Box sx={{ textAlign: 'center', py: 4 }}>
+        <CircularProgress />
+        <Typography>Loading User Information</Typography>
+      </Box>
+    );
+  }
   if (!userData) return <Typography color="error">Failed to load user data</Typography>;
 
   const userDetails = [
@@ -63,8 +70,7 @@ const UserInformation: React.FC<UserInformationProps> = ({ userData, loading }) 
   ];
 
   return (
-    <Box
-      sx={{ p: 3, borderBottom: `1px solid ${theme.palette.divider}`, backgroundColor: theme.palette.background.default }}>
+    <Box sx={{ p: 3, borderBottom: `1px solid ${theme.palette.divider}`, backgroundColor: theme.palette.background.default }}>
       <Box
         sx={{ display: 'flex', flexDirection: isMobile ? 'column' : 'row', gap: 4, alignItems: isMobile ? 'center' : 'flex-start' }}>
         {/* Profile Picture Section */}

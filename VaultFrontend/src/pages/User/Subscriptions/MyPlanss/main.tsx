@@ -4,49 +4,52 @@ import CurrentSubscriptionCard from './CurrentSubscriptionCard'
 import SubscriptionInvoice from './SubscriptionInvoice'
 import React, { useState } from 'react'
 import axios from 'axios'
+import { useNavigate } from 'react-router-dom'
 
 const url = import.meta.env.VITE_NODE_ENV === "production" ? "api" : "api";
 
 const Main = () => {
   const theme = useTheme();
+  const navigate = useNavigate();
   const [open, setOpen] = useState(false);
-  const [invoice, setInvoice] = useState<any>(null);
   const [loading, setLoading] = useState(false);
+  const [invoice, setInvoice] = useState<any>(null);
 
  const handleInvoiceClick = async () => {
   setLoading(true);
-  try {
-    const response = await axios.get(`${url}/subscription/invoice`, {
-      headers: {
-        'Authorization': `Bearer ${localStorage.getItem('token')}`
-      }
-    });
-    const invoiceData = response.data.data;
-    console.log("📄 Invoice data:", invoiceData);
-    setInvoice(invoiceData); 
-    setOpen(true);
+  // try {
+  //   const response = await axios.get(`${url}/subscription/invoice`, {
+  //     headers: {
+  //       'Authorization': `Bearer ${localStorage.getItem('token')}`
+  //     }
+  //   });
+  //   const invoiceData = response.data.data;
+  //   console.log("📄 Invoice data:", invoiceData);
+  //   setInvoice(invoiceData); 
+  //   setOpen(true);
 
-    // ✅ Store recurrentInvoiceId in localStorage
-   const invoiceId = invoiceData.id;
-   if (invoiceId) {
-      localStorage.setItem("InvoiceId", invoiceId);
-    }
-    console.log("Invoice ID stored in localStorage:", invoiceId);
+  //   // ✅ Store recurrentInvoiceId in localStorage
+  //  const invoiceId = invoiceData.id;
+  //  if (invoiceId) {
+  //     localStorage.setItem("InvoiceId", invoiceId);
+  //   }
+  //   console.log("Invoice ID stored in localStorage:", invoiceId);
 
-  } catch (err) {
-    alert('Failed to fetch invoice');
-    console.error('Invoice fetch error:', err);
-  }
+  // } catch (err) {
+  //   alert('Failed to fetch invoice');
+  //   console.error('Invoice fetch error:', err);
+  // }
+  navigate('/original-invoices');
   setLoading(false);
 };
   const handleClose = () => setOpen(false);
 
   return (
     <Box className="dashboard-container" sx={{ backgroundColor: theme.palette.background.default }}>
-     <PageHeader title="My Plans" buttonText={loading ? 'Loading...' : 'Your Invoice'} loading={loading} onButtonClick={handleInvoiceClick} />
+     <PageHeader title="My Plans" buttonText={loading ? 'Loading...' : 'Pay Invoice'} loading={loading} onButtonClick={handleInvoiceClick} />
 
       <CurrentSubscriptionCard/>
-      <SubscriptionInvoice open={open} invoice={invoice} handleClose={handleClose} />
+      {/* <SubscriptionInvoice open={open} invoice={invoice} handleClose={handleClose} /> */}
     </Box>
   )
 }
