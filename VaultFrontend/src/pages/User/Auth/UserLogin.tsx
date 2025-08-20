@@ -15,6 +15,7 @@ import {
 import axios from 'axios';
 import { useAppToast } from '../../../utils/Toast';
 import { useAuth } from '@/contexts/authContext';
+import api from '@/helpers/apiHelper';
 
 const UserLogin = () => {
   const theme = useTheme();
@@ -36,7 +37,7 @@ const handleLogin = async (e: React.FormEvent) => {
     const device = navigator.userAgent || 'Unknown';
     const platform = navigator.platform || 'Unknown';
 
-    const response = await axios.post(`${url}/customer/login`, {
+    const response = await api.post(`${url}/customer/login`, {
       email,
       password,
       device,
