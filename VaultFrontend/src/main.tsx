@@ -1,5 +1,6 @@
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
+import './helpers/setupAxios';
 import App from './App';
 import './App.css'
 import { Box } from '@mui/material';
