@@ -403,7 +403,7 @@ module.exports = {
       });
     }
   },
-  updateInvoicePayment: async (req, res) => {
+  updateInvoicePayment: async (req, res) => { 
     const userId = req.user._id || req.user.id;  // Get the userId from the authenticated request
     const { paymentId, invoiceId, type, accountId, anyCurrency } = req.body; // Extracting data from request body
 
@@ -573,6 +573,6 @@ module.exports = {
       details: errData
     });
   }
-},
+  },
 };
 

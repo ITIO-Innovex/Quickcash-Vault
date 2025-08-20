@@ -43,8 +43,9 @@ const SecurityForm = () => {
     setErrorMsg(msg);
     console.error('Error updating password:', msg);
   }
-};
-const handleDigitChange = (value: string, index: number) => {
+  };
+  
+  const handleDigitChange = (value: string, index: number) => {
   if (!/^[0-9]?$/.test(value)) return;
 
   const newDigits = [...codeDigits];
@@ -58,7 +59,7 @@ const handleDigitChange = (value: string, index: number) => {
   }
 
   setConfirmationCode(newDigits.join(''));
-};
+  };
 
   const handleConfirm = async () => {
   try {
@@ -93,8 +94,7 @@ const handleDigitChange = (value: string, index: number) => {
   } catch (error) {
     console.error('Error confirming password change:', error?.response?.data || error);
   }
-};
-
+  };
 
   return (
     <Box

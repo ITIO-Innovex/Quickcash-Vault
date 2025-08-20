@@ -100,7 +100,7 @@ module.exports = {
       });
     }
   },
-  getCurrencyInstruments : async (req, res) => {
+  getCurrencyInstruments : async (req, res) => { 
   try {
     const response = await axios.get(`${VAULT_BASE_URL}/currency/instruments/`);
     // Success response
@@ -118,5 +118,5 @@ module.exports = {
       details: error.response?.data || null
     });
   }
-},
+  },
 };

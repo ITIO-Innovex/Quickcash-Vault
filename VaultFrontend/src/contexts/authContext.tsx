@@ -53,7 +53,6 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
        .then(res => {
         // Subscription details response 
         const allSubs = res.data.subscriptionDetails;
-
         setSubscriptionDetails(allSubs);
 
         if (allSubs && allSubs.length > 0) {
@@ -83,7 +82,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         },
       });
       const reviewStatus = res.data?.status;
-      console.log('KYC Status Response from auth context:', res.data);
+      // console.log('KYC Status Response from auth context:', res.data);
       setKycStatus(reviewStatus); // Store KYC status here
     } catch (err) {
       console.error('Error fetching KYC status:', err);
@@ -97,13 +96,16 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       setToken(storedToken);
       setUser(decoded.data);
       setIsAuthenticated(true);
-      fetchKycStatus();   // Fetch KYC status on initial load
+       fetchKycStatus().finally(() => {
+      setLoading(false); 
+    });   // Fetch KYC status on initial load
     } else {
       localStorage.removeItem('token');
       setToken(null);
       setUser(null);
       setIsAuthenticated(false);
       setKycStatus(null); // Reset KYC status if token is invalid
+      setLoading(false);
     }
     
 
@@ -130,10 +132,13 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       setToken(newToken);
       setUser(decoded.data);
       setIsAuthenticated(true);
-      fetchKycStatus(); // Fetch KYC status upon login
-    } else {
-      logout();
-    }
+      setLoading(true);
+      fetchKycStatus().finally(() => {
+      setLoading(false);
+    });
+  } else {
+    logout();
+  }
   };
 
   const logout = () => {
@@ -205,3 +210,4 @@ function isTokenValid(token: string): boolean {
   }
 }
 
+export { AuthContext };

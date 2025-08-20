@@ -1,15 +1,14 @@
+import axios from 'axios'; 
 import Mfa from './MultiFactorAuth';
 import UserScope from './UserScopes';
-import AccountsList from './AccountsList';
+import UpgradeKYC from './UpgradeKYC';
 import LoginHistory from './LoginHistory';
 import SecurityForm from './SecurityForm';
 import TabNavigation from './TabNavigation';
-import UpdateKYC from './UpdateKYC';
 import { useEffect, useState } from 'react';
 import { useTheme } from '@mui/material/styles';
 import UserInformation from './UserInformation';
 import { Box, Container, useMediaQuery } from '@mui/material';
-import BeneficiaryAccountsList from './BeneficiaryAccountsList';
 
 interface VaultUser {
   email: string;
@@ -35,13 +34,14 @@ const UserProfile = () => {
     const fetchUserData = async () => {
       try {
         const token = localStorage.getItem('token');
-        const res = await fetch(`${url}/customer/vault/user-info`, {
+        const res = await axios(`${url}/customer/vault/user-info`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
         });
-        const result = await res.json();
-        setUserData(result.data);
+        const response = res.data;
+        console.log('data',response)
+        setUserData(response.data);
       } catch (err) {
         console.error('Error fetching user info:', err);
       } finally {
@@ -52,11 +52,13 @@ const UserProfile = () => {
     fetchUserData();
   }, []);
 
+  const hasBankAccountScope = !userData?.userScopes?.includes('bank_account:forbidden');
+
   const tabs = [
     'User Information',
     'Session History',
     'Security',
-    'Update KYC',
+     ...(hasBankAccountScope ? ['Upgrade KYC'] : []),
     'MFA'
   ];
 
@@ -66,10 +68,6 @@ const UserProfile = () => {
     switch (activeSubTab) {
       case 'User Scopes':
         return <UserScope userScopes={userData?.userScopes || []} />;
-      // case 'Accounts List':
-      //   return <AccountsList />;
-      // case 'Beneficiary Accounts List':
-      //   return <BeneficiaryAccountsList />;
       default:
         return <UserScope userScopes={userData?.userScopes || []} />;
     }
@@ -82,13 +80,7 @@ const UserProfile = () => {
           <Box>
             <UserInformation userData={userData} loading={loading} />
             <Box sx={{ mt: 3 }}>
-              <TabNavigation
-                tabs={subTabs}
-                activeTab={activeSubTab}
-                onTabChange={setActiveSubTab}
-                orientation={isMobile ? 'vertical' : 'horizontal'}
-                variant={isMobile ? 'standard' : 'scrollable'}
-              />
+              <TabNavigation tabs={subTabs} activeTab={activeSubTab} onTabChange={setActiveSubTab} orientation={isMobile ? 'vertical' : 'horizontal'} variant={isMobile ? 'standard' : 'scrollable'} />
               <Box sx={{ mt: 2 }}>
                 {renderSubTabContent()}
               </Box>
@@ -99,8 +91,8 @@ const UserProfile = () => {
         return <LoginHistory />;
       case 'Security':
         return <SecurityForm />;
-      // case 'Update KYC':
-      //   return <UpdateKYC />;
+      case 'Upgrade KYC':
+        return <UpgradeKYC />;
       case 'MFA':
         return < Mfa/>;
       default:

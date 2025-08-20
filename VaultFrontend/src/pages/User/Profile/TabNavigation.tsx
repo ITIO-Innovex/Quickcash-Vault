@@ -63,28 +63,4 @@ const TabNavigation = ({
   );
 };
 
-
-// import { Tabs, Tab, TabsProps } from '@mui/material';
-
-// interface TabNavigationProps {
-//   tabs: string[];
-//   activeTab: string;
-//   onTabChange: (tab: string) => void;
-//   orientation?: TabsProps['orientation'];
-//   variant?: TabsProps['variant'];
-// }
-
-// const TabNavigation = ({ tabs, activeTab, onTabChange, orientation, variant }: TabNavigationProps) => (
-//   <Tabs
-//     value={tabs.indexOf(activeTab)}
-//     onChange={(e, i) => onTabChange(tabs[i])}
-//     orientation={orientation}
-//     variant={variant}
-//   >
-//     {tabs.map((tab, index) => (
-//       <Tab key={index} label={tab} />
-//     ))}
-//   </Tabs>
-// );
-
 export default TabNavigation;

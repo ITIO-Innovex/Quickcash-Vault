@@ -1,14 +1,14 @@
 import axios from 'axios';
+import api from '@/helpers/apiHelper';
+import { Currency } from 'lucide-react';
 import{ useEffect, useState } from 'react';
+import { useAppToast } from '@/utils/Toast';
 import { CircularProgress } from '@mui/material';
 import CustomModal from '@/components/CustomModal';
-import { Box, Typography, Grid, Chip, Button, Stepper, Step, StepLabel } from '@mui/material';
 import CustomButton from '@/components/CustomButton';
-import CustomInput from '@/components/CustomInputField';
 import CustomSelect from '@/components/CustomDropdown';
-import { useAppToast } from '@/utils/Toast';
-import { Currency } from 'lucide-react';
-import api from '@/helpers/apiHelper';
+import CustomInput from '@/components/CustomInputField';
+import { Box, Typography, Grid, Chip, Stepper, Step, StepLabel } from '@mui/material';
 
 const url = import.meta.env.VITE_NODE_ENV === "production" ? "api" : "api";
 
@@ -69,7 +69,7 @@ const PaymentDetails = ({ open, onClose, invoice }: any) => {
         headers: { Authorization: `Bearer ${token}` },
       });
 
-      // console.log('✅ Payment API response:', response.data);
+      console.log('✅ Payment API response:', response.data);
       // Set payment ID to localStorage
       const paymentId = response.data?.data?.id;
       if (paymentId) {
@@ -81,7 +81,7 @@ const PaymentDetails = ({ open, onClose, invoice }: any) => {
       // Show success toast message
       toast.success(response.data?.message || 'Invoice payment request sent successfully');
 
-      setActiveStep(3); // Proceed to next step
+      setActiveStep(2); // Proceed to next step
     } catch (error: any) {
       if (error.response) {
         const { status, message } = error.response.data || {};
@@ -210,8 +210,8 @@ const PaymentDetails = ({ open, onClose, invoice }: any) => {
         </Box>
       )}
 
-      {/* Step 3 - Confirm Payment
-       {activeStep === 2 && (
+      {/* Step 3- Confirm Payment */}
+         {activeStep === 2 && (
         <Box py={3} maxWidth={500} mx="auto">
           <Typography variant="h6" mb={2} fontWeight="bold" textAlign="center">
             Update Payment
@@ -254,6 +254,7 @@ const PaymentDetails = ({ open, onClose, invoice }: any) => {
                     const response = await api.post(`${url}/subscription/invoice/payment/update`, payload, {
                       headers: { Authorization: `Bearer ${token}` },
                     });
+                    console.log('Invoice Payment Update Response',response.data);
                     // Success: go to next step
                     toast.success(response.data?.message || 'Invoice payment request updated successfully');
                     setActiveStep(3);
@@ -274,9 +275,9 @@ const PaymentDetails = ({ open, onClose, invoice }: any) => {
             </Box>
           </Box>
         </Box>
-      )} */}
+      )} 
 
-      {/* Step 4 - Confirm Payment */}
+      {/* { Step 3 - update Payment */}
       {activeStep === 3 && (
         <Box py={3} maxWidth={500} mx="auto">
           <Typography variant="h6" mb={2} fontWeight="bold" textAlign="center">
@@ -322,6 +323,7 @@ const PaymentDetails = ({ open, onClose, invoice }: any) => {
                     const response = await axios.post(`${url}/subscription/invoice/payment/confirm`, payload, {
                       headers: { Authorization: `Bearer ${token}` },
                     });
+                    console.log("Invoice Payment Confirm response",response.data);
                     // Success: go to next step
                     toast.success(response.data?.message || 'Invoice payment request paid successfully');
                     setActiveStep(4);
