@@ -8212,7 +8212,7 @@ color: var(--bs-primary);
 }
 
 .wallet-card-content {
-  padding: 0 16px;
+  padding: 0 3px;
   display: flex;
   flex-direction: column;
   gap: 10px;
@@ -8269,7 +8269,7 @@ color: var(--bs-primary);
 @media (max-width: 768px) {
   .wallet-card {
     max-width: 100vw;
-    padding: 10px 6px;
+    gap:10px;
   }
   .wallet-address,
   .wallet-type {

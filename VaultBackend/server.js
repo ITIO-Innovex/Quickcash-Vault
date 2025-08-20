@@ -27,11 +27,12 @@ mongoose.connect(process.env.MONGO_URI)
 
 // Routes
 app.use('/api/kyc',KycRoutes);
-app.use('/api/customer', AuthCustomerRoutes);
 app.use('/api/wallet', WalletRoutes);
+app.use('/api/customer', AuthCustomerRoutes);
 app.use('/api/mfa', require('./Routes/Customer/MfaRoutes'));
 app.use('/api/iban', require('./Routes/Customer/IbanRoutes'));
 app.use('/api/card', require('./Routes/Customer/CardsRoutes'));
+app.use('/api/contact' , require('./Routes/Customer/ContactRoute'));
 app.use('/api/currency', require('./Routes/Customer/CurrencyRoute'));
 app.use('/api/referral', require('./Routes/Customer/ReferralRoutes'));
 app.use('/api/operation', require('./Routes/Customer/OperationRoutes'));

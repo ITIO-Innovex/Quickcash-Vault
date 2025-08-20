@@ -50,7 +50,6 @@ import ProceedPage from '@/pages/User/BuySellSwap/ProceedPage';
 import { createBrowserRouter, Navigate } from 'react-router-dom';
 import TransferReuest from '@/pages/Admin/Crypto/Transfers/main';
 import BusinessRegister from '@/pages/User/BusinessRegister/main';
-import Settings from '@/pages/User/InvoiceDashboard/Settings/main'; 
 import AllSubscriptions from '@/pages/User/Subscriptions/Plans/main'; 
 import WalletRequest from '@/pages/Admin/Crypto/WalletRequests/main';
 import MySubscriptions from '@/pages/User/Subscriptions/MyPlanss/main';
@@ -58,15 +57,9 @@ import InvoiceDashboard from '@/pages/User/InvoiceDashboard/Dashboard';
 import CardRequests from '@/pages/User/cards/card-details/cardRequests';
 import SendMoney from '@/pages/User/dashboardInsideForms/sendMoney/main';
 import TotalTransactions from '@/pages/Admin/Fiat/TotalTransactions/main';
-import InvoiceQuotes from '@/pages/User/InvoiceDashboard/InvoiceQuote/main';
-import InvoiceProduct from '@/pages/User/InvoiceDashboard/InvoiceProduct/main';
-import InvoiceTemplate from '@/pages/User/InvoiceDashboard/InvoiceTemplate/main';
-import InvoiceCategory from '@/pages/User/InvoiceDashboard/InvoiceCategory/main';
 import PendingTransactionsList from '@/pages/Admin/Fiat/PendingTransactions/main';
 import OriginalInvoices from '@/pages/User/InvoiceDashboard/OriginalInvoices/main';
-import ManualPayment from '@/pages/User/InvoiceDashboard/ManualInvoicePaymeny/main';
 import RecurringInvoices from '@/pages/User/InvoiceDashboard/RecurringInvoices/main';
-import InvoiceTransactions from '@/pages/User/InvoiceDashboard/InvoiceTransactions/main';
 import AddBeneficiaryForm from '@/pages/User/dashboardInsideForms/sendMoney/addNewBenefiecry';
 import SelectBeneficiary from '@/pages/User/dashboardInsideForms/sendMoney/selectBenefiecery';
 
@@ -144,7 +137,6 @@ const AdminProtectedRoute = ({ children }: { children: JSX.Element }) => {
         { path: '/wallets', element: <Wallet /> },
         { path: '/clients', element: <Clients /> },
         { path: '/currency', element: <Currency/> },
-        { path: '/settings', element: <Settings /> },
         { path: '/help-center', element: <Tickets /> },
         { path: '/send-money', element: <SendMoney /> },
         { path: '/refer-earn', element: <ReferEarn /> },
@@ -159,24 +151,18 @@ const AdminProtectedRoute = ({ children }: { children: JSX.Element }) => {
         { path: '/transactions', element: <Transactions /> },
         { path: '/all-plans', element: <AllSubscriptions /> },
         { path: '/card-requests', element: <CardRequests /> },
-        { path: '/invoice-quotes', element: <InvoiceQuotes /> },
         { path: '/summary-tokens', element: <SummaryTokens /> },
         { path: '/exchange-pairs', element: <ExchangePairs /> },
-        { path: '/manual-payment', element: <ManualPayment /> },
         { path: '/beneficiary', element: <SelectBeneficiary /> },
         { path: '/wallet-accounts', element: <WalletAccounts /> },
         { path: '/buysellswap/proceed', element: <ProceedPage /> },
-        { path: '/invoice-products', element: <InvoiceProduct /> },
         { path: '/instrument-pairs', element: <InstrumentPairs /> },
-        { path: '/invoice-category', element: <InvoiceCategory /> },
         { path: '/crypto-dashboard', element: <CryptoDashboard /> },
-        { path: '/template-settings', element: <InvoiceTemplate /> },
         { path: '/register-business', element: <BusinessRegister /> },
         { path: '/add-beneficiary', element: <AddBeneficiaryForm /> },
         { path: '/invoice-dashboard', element: <InvoiceDashboard /> },
         { path: '/original-invoices', element: < OriginalInvoices /> },
         { path: '/recurring-invoices', element: < RecurringInvoices /> },
-        { path: '/invoice-transactions', element: <InvoiceTransactions /> },
       ]
 
 // --- Admin Routes ---
